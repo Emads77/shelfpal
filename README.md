@@ -2,6 +2,29 @@
 
 
 
+
+# Book Library App
+
+Catalogues physical books and tracks their location on your shelves.
+
+Stack: Django + Django REST Framework, PostgreSQL, Docker.
+
+## Prerequisites
+- Python 3.12+
+- Docker and Docker Compose
+
+
+## Setup
+1. python -m venv venv
+2. source venv/bin/activate   (Windows: venv\Scripts\activate)
+3. pip install -r requirements.txt
+4. docker compose up -d
+5. python manage.py migrate
+6. python manage.py runserver
+
+
+
+
 ## Getting started
 
 To make it easy for you to get started with GitLab, here's a list of recommended next steps.
