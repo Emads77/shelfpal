@@ -10,9 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
+
 load_dotenv()
 print("DEBUG env:", os.getenv('POSTGRES_USER'), os.getenv('POSTGRES_DB'))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
