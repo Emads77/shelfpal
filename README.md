@@ -23,6 +23,37 @@ Stack: Django + Django REST Framework, PostgreSQL, Docker.
 6. python manage.py runserver
 
 
+## Git process
+
+We use GitHub flow. Main is protected, every change goes through a merge request.
+
+1. Pick an issue from the board.
+2. In the issue, click the arrow next to "Create merge request" and choose "Create branch" (source: main).
+3. Get the branch locally:
+   git fetch origin
+   git checkout <branch name>
+4. Commit with a short description and the issue number at the end:
+   git commit -m "Add shelf model #29"
+5. Before opening the merge request, update your branch with main:
+   git fetch origin
+   git merge origin/main
+6. Push and open a merge request. The other team member reviews it before merging.
+7. After merging, the branch is deleted automatically and the issue is closed.
+
+## Code quality
+
+Run these before opening a merge request.
+
+Backend (from /backend, venv active):
+   ruff check .
+   ruff format .
+
+Frontend (from /frontend):
+   npx oxlint
+   npx prettier --write .
+
+Setup details and reasoning: see section 10 of the technical design.
+
 
 
 ## Getting started
