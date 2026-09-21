@@ -21,7 +21,7 @@ Stack: Django + Django REST Framework, PostgreSQL, Docker.
 4. docker compose up -d
 5. python manage.py migrate
 6. python manage.py runserver
-
+7.7test 
 
 ## Git process
 
