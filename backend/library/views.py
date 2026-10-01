@@ -25,6 +25,16 @@ class BookcaseViewSet(viewsets.ModelViewSet):
             name=serializer.validated_data["name"],
         )
 
+    def perform_update(self, serializer):
+        serializer.instance = services.update_bookcase(
+            owner=self.request.user,
+            bookcase_id=self.kwargs["pk"],
+            name=serializer.validated_data["name"],
+        )
+
+    def perform_destroy(self, instance):
+        services.delete_bookcase(self.request.user, instance.id)
+
 
 class ShelfViewSet(viewsets.ModelViewSet):
     serializer_class = ShelfSerializer
@@ -42,3 +52,15 @@ class ShelfViewSet(viewsets.ModelViewSet):
             bookcase_id=self.kwargs["bookcase_pk"],
             name=serializer.validated_data["name"],
         )
+
+    def perform_update(self, serializer):
+        serializer.instance = services.update_shelf(
+            owner=self.request.user,
+            bookcase_id=self.kwargs["bookcase_pk"],
+            shelf_id=self.kwargs["pk"],
+            name=serializer.validated_data["name"]
+        )
+
+    def perform_destroy(self, instance):
+        bookcase_id = self.kwargs["bookcase_pk"]
+        services.delete_shelf(self.request.user, bookcase_id, instance.id)
