@@ -16,7 +16,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 load_dotenv()
-print("DEBUG env:", os.getenv("POSTGRES_USER"), os.getenv("POSTGRES_DB"))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -46,7 +45,10 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "library",
+    "accounts",
 ]
+
+AUTH_USER_MODEL = "accounts.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
