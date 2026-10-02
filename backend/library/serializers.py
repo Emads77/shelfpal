@@ -21,7 +21,7 @@ class ShelfSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shelf
         fields = ['id', 'name', 'bookcase']
-        read_only_fields = ['id',Bookcase]
+        read_only_fields = ['id', 'bookcase']
 
 
 class CopySerializer(serializers.ModelSerializer):

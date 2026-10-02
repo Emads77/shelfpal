@@ -1,12 +1,13 @@
 from django.shortcuts import get_object_or_404
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from rest_framework import exceptions
 from library.models import Bookcase, Shelf
 
 
 def create_bookcase(owner, name):
     try:
-        return Bookcase.objects.create(owner=owner, name=name)
+        with transaction.atomic():
+            return Bookcase.objects.create(owner=owner, name=name)
     except IntegrityError:
         raise exceptions.ValidationError(
             {"name": "You already have a bookcase with this name"}
@@ -16,9 +17,10 @@ def create_bookcase(owner, name):
 def update_bookcase(owner, bookcase_id, name):
     bookcase = get_object_or_404(Bookcase, id=bookcase_id, owner=owner)
     try:
-        bookcase.name = name
-        bookcase.save()
-        return bookcase
+        with transaction.atomic():
+            bookcase.name = name
+            bookcase.save()
+            return bookcase
     except IntegrityError:
         raise exceptions.ValidationError(
             {"name": "You already have a bookcase with this name"}
@@ -37,7 +39,8 @@ def list_bookcases(owner):
 def create_shelf(owner, bookcase_id, name):
     bookcase = get_object_or_404(Bookcase, id=bookcase_id, owner=owner)
     try:
-        return Shelf.objects.create(bookcase=bookcase, name=name)
+        with transaction.atomic():
+            return Shelf.objects.create(bookcase=bookcase, name=name)
     except IntegrityError:
         raise exceptions.ValidationError(
             {"name": "You already have a shelf with this name in this bookcase"}
@@ -48,9 +51,10 @@ def update_shelf(owner, bookcase_id, shelf_id, name):
     bookcase = get_object_or_404(Bookcase, id=bookcase_id, owner=owner)
     shelf = get_object_or_404(Shelf, id=shelf_id, bookcase=bookcase)
     try:
-        shelf.name = name
-        shelf.save()
-        return shelf
+        with transaction.atomic():
+            shelf.name = name
+            shelf.save()
+            return shelf
     except IntegrityError:
         raise exceptions.ValidationError(
             {"name": "You already have a shelf with this name in this bookcase"}
