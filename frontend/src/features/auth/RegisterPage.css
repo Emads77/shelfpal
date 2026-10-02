@@ -1,0 +1,43 @@
+.auth-page {
+  width: 100%;
+  max-width: 24rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.auth-form label {
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.auth-form input {
+  font-size: 1rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.auth-form input[aria-invalid="true"] {
+  border-color: #d32f2f;
+}
+
+.field-error,
+.form-error {
+  color: #d32f2f;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.auth-form button {
+  margin-top: 1rem;
+  min-height: 44px;
+  font-size: 1rem;
+}

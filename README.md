@@ -4,14 +4,18 @@
 
 Catalogues physical books and tracks their location on your shelves.
 
-Stack: Django + Django REST Framework, PostgreSQL, Docker.
+Stack: React, Django + Django REST Framework, PostgreSQL, Docker.
 
 ## Prerequisites
 - Python 3.12+
 - Docker and Docker Compose
 
+## Setup Frontend
+1. cd frontend
+2. npm install
+3. npm run dev
 
-## Setup
+## Setup Backend
 1. python -m venv venv
 2. source venv/bin/activate   (Windows: venv\Scripts\activate)
 3. pip install -r requirements.txt
