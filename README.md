@@ -1,6 +1,6 @@
 
 
-# Book Library App
+# ShelfPal: Library Management App
 
 Catalogues physical books and tracks their location on your shelves.
 

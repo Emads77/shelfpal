@@ -1,3 +1,10 @@
+import {
+  clearTokens,
+  getAccessToken,
+  getRefreshToken,
+  setTokens,
+} from "./tokenStorage.js";
+
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api";
 
 export class ApiError extends Error {
@@ -9,15 +16,27 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiRequest(path, { method = "GET", body } = {}) {
+let sessionExpiredHandler = () => {};
+export function onSessionExpired(handler) {
+  sessionExpiredHandler = handler;
+  return () => {
+    sessionExpiredHandler = () => {};
+  };
+}
+
+async function send(path, { method = "GET", body, auth = true } = {}) {
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  const token = getAccessToken();
+  if (auth && token) headers.Authorization = `Bearer ${token}`;
+
   let response;
   try {
     response = await fetch(`${BASE_URL}${path}`, {
       method,
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      headers,
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
   } catch {
@@ -29,6 +48,49 @@ export async function apiRequest(path, { method = "GET", body } = {}) {
   }
 
   const data = await parseJson(response);
+  return { response, data };
+}
+
+let refreshPromise = null;
+
+function refreshAccessToken() {
+  if (!refreshPromise) {
+    refreshPromise = doRefresh().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
+}
+
+async function doRefresh() {
+  const refresh = getRefreshToken();
+  const { response, data } = await send("/auth/refresh/", {
+    method: "POST",
+    body: { refresh },
+    auth: false,
+  });
+  if (!response.ok) {
+    if (response.status === 401) clearTokens();
+    throw new ApiError(response.status, data, "Token refresh failed");
+  }
+  setTokens({ access: data.access, refresh: data.refresh ?? refresh });
+}
+
+export async function apiRequest(path, options = {}) {
+  let { response, data } = await send(path, options);
+
+  if (response.status === 401 && options.auth !== false && getRefreshToken()) {
+    try {
+      await refreshAccessToken();
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        sessionExpiredHandler();
+        throw new ApiError(401, data, "Session expired");
+      }
+      throw err;
+    }
+    ({ response, data } = await send(path, options));
+  }
 
   if (!response.ok) {
     throw new ApiError(
