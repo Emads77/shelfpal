@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import Layout from "./Layout.jsx";
 import RegisterPage from "../features/auth/RegisterPage.jsx";
-
+import BookcasesPage from "../features/bookcases/BookcasesPage.jsx";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -9,6 +9,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <h1>ShelfPal: Library Management App</h1> },
       { path: "register", element: <RegisterPage /> },
+      {path: "bookcases" , element: <BookcasesPage />},
       { path: "*", element: <h1>Page not found</h1> },
     ],
   },

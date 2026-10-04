@@ -48,9 +48,7 @@ class BookcaseApiTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_rename_to_an_existing_name_is_rejected(self):
-        print("the bookcases before creating in the test",self.client.get("/api/bookcases/").data)
         Bookcase.objects.create(owner=self.owner, name="Hallway")
-        print("the bookcases after creating in the test",self.client.get("/api/bookcases/").data)
         response = self.client.patch(
             f"/api/bookcases/{self.bookcase.id}/", {"name": "Hallway"}
         )
@@ -91,9 +89,8 @@ class ShelfApiTests(APITestCase):
         response = self.client.post(
             f"/api/bookcases/{self.bookcase.id}/shelves/", {"name": "Top"}
         )
-        print("the failling test ------ > ", response.data)
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED,response.data)  # fail
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED,)
         self.assertEqual(response.data["name"], "Top")
         self.assertTrue(Shelf.objects.filter(bookcase=self.bookcase).exists())
 
