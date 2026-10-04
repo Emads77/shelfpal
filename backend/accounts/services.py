@@ -2,8 +2,8 @@ from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import IntegrityError, transaction
 from rest_framework import serializers
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import User
 

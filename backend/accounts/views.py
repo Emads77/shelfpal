@@ -3,8 +3,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import RegisterInputSerializer, UserOutputSerializer
 from . import services
+from .serializers import (
+    LogoutInputSerializer,
+    RegisterInputSerializer,
+    UserOutputSerializer,
+)
 
 
 class RegisterView(APIView):
@@ -26,6 +30,8 @@ class LogoutView(APIView):
     authentication_classes = []
 
     def post(self, request):
+        serializer = LogoutInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         services.revoke_refresh_token(request.data.get("refresh"))
         return Response(status=status.HTTP_204_NO_CONTENT)
 
