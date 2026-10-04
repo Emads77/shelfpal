@@ -7,11 +7,6 @@ from library import services
 from library.serializers import BookcaseSerializer, ShelfSerializer
 
 
-@api_view(["GET"])
-def ping(request):
-    return Response({"message": "pong from Django"})
-
-
 class BookcaseViewSet(viewsets.ModelViewSet):
     serializer_class = BookcaseSerializer
     permission_classes = [IsAuthenticated]
