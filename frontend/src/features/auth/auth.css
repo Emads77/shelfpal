@@ -1,0 +1,8 @@
+.auth-page {
+  width: 100%;
+  max-width: 24rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
+  text-align: left;
+}

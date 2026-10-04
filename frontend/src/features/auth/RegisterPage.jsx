@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { ApiError } from "../../api/client.js";
 import { register } from "./api.js";
-import "./RegisterPage.css";
+import FormError from "../../shared/ui/FormError.jsx";
+import FormField from "../../shared/ui/FormField.jsx";
+import "./auth.css";
+import { Link } from "react-router";
 
 const EMPTY_FORM = { username: "", email: "", password: "" };
 
@@ -64,8 +67,8 @@ export default function RegisterPage() {
       <section className="auth-page">
         <h1>Account created</h1>
         <p role="status">
-          Your account for <strong>{createdEmail}</strong> is ready. You can now
-          log in (still not implemented).
+          Your account for <strong>{createdEmail}</strong> is ready.{" "}
+          <Link to="/login">Login</Link> to continue.
         </p>
       </section>
     );
@@ -76,65 +79,36 @@ export default function RegisterPage() {
   return (
     <section className="auth-page">
       <h1>Register an account</h1>
-      <form onSubmit={handleSubmit} noValidate className="auth-form">
-        <label htmlFor="username">Username</label>
-        <input
+      <form onSubmit={handleSubmit} noValidate className="form">
+        <FormField
           id="username"
-          name="username"
+          label="Username"
           autoComplete="username"
           autoCapitalize="none"
           value={values.username}
           onChange={handleChange}
-          aria-invalid={Boolean(errors.username)}
-          aria-describedby={errors.username ? "username-error" : undefined}
+          errors={errors.username}
         />
-        {errors.username && (
-          <p id="username-error" className="field-error">
-            {errors.username.join(" ")}
-          </p>
-        )}
-
-        <label htmlFor="email">Email</label>
-        <input
+        <FormField
           id="email"
-          name="email"
+          label="Email"
           type="email"
           autoComplete="email"
           autoCapitalize="none"
           value={values.email}
           onChange={handleChange}
-          aria-invalid={Boolean(errors.email)}
-          aria-describedby={errors.email ? "email-error" : undefined}
+          errors={errors.email}
         />
-        {errors.email && (
-          <p id="email-error" className="field-error">
-            {errors.email.join(" ")}
-          </p>
-        )}
-
-        <label htmlFor="password">Password</label>
-        <input
+        <FormField
           id="password"
-          name="password"
+          label="Password"
           type="password"
           autoComplete="new-password"
           value={values.password}
           onChange={handleChange}
-          aria-invalid={Boolean(errors.password)}
-          aria-describedby={errors.password ? "password-error" : undefined}
+          errors={errors.password}
         />
-        {errors.password && (
-          <p id="password-error" className="field-error">
-            {errors.password.join(" ")}
-          </p>
-        )}
-
-        {formError && (
-          <p className="form-error" role="alert">
-            {formError}
-          </p>
-        )}
-
+        <FormError>{formError}</FormError>
         <button type="submit" disabled={submitting}>
           {submitting ? "Creating account..." : "Create account"}
         </button>

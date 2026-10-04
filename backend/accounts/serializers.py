@@ -32,3 +32,12 @@ class UserOutputSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "username", "email"]
         read_only_fields = fields
+
+
+class LogoutInputSerializer(serializers.Serializer):
+    refresh = serializers.CharField(
+        error_messages={
+            "required": "Refresh token is required.",
+            "blank": "Refresh token is required.",
+        },
+    )
