@@ -1,5 +1,3 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
@@ -53,7 +51,7 @@ class ShelfViewSet(viewsets.ModelViewSet):
             owner=self.request.user,
             bookcase_id=self.kwargs["bookcase_pk"],
             shelf_id=self.kwargs["pk"],
-            name=serializer.validated_data["name"]
+            name=serializer.validated_data["name"],
         )
 
     def perform_destroy(self, instance):
