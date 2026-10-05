@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { Link } from "react-router";
 import { ApiError } from "../../api/client.js";
-import { register } from "./api.js";
+import { usePageTitle } from "../../shared/hooks/usePageTitle.js";
+import Button from "../../shared/ui/Button.jsx";
 import FormError from "../../shared/ui/FormError.jsx";
 import FormField from "../../shared/ui/FormField.jsx";
+import { register } from "./api.js";
 import "./auth.css";
-import { Link } from "react-router";
 
 const EMPTY_FORM = { username: "", email: "", password: "" };
 
@@ -26,6 +28,8 @@ export default function RegisterPage() {
   const [formError, setFormError] = useState("");
   const [status, setStatus] = useState("idle");
   const [createdEmail, setCreatedEmail] = useState("");
+
+  usePageTitle(status === "success" ? "Account created" : "Register");
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -65,11 +69,15 @@ export default function RegisterPage() {
   if (status === "success") {
     return (
       <section className="auth-page">
-        <h1>Account created</h1>
-        <p role="status">
-          Your account for <strong>{createdEmail}</strong> is ready.{" "}
-          <Link to="/login">Login</Link> to continue.
-        </p>
+        <div className="auth-card">
+          <h1>Account created</h1>
+          <p role="status" className="auth-card__intro">
+            Your account for <strong>{createdEmail}</strong> is ready.
+          </p>
+          <Link to="/login" className="button button--primary">
+            Log in
+          </Link>
+        </div>
       </section>
     );
   }
@@ -78,41 +86,51 @@ export default function RegisterPage() {
 
   return (
     <section className="auth-page">
-      <h1>Register an account</h1>
-      <form onSubmit={handleSubmit} noValidate className="form">
-        <FormField
-          id="username"
-          label="Username"
-          autoComplete="username"
-          autoCapitalize="none"
-          value={values.username}
-          onChange={handleChange}
-          errors={errors.username}
-        />
-        <FormField
-          id="email"
-          label="Email"
-          type="email"
-          autoComplete="email"
-          autoCapitalize="none"
-          value={values.email}
-          onChange={handleChange}
-          errors={errors.email}
-        />
-        <FormField
-          id="password"
-          label="Password"
-          type="password"
-          autoComplete="new-password"
-          value={values.password}
-          onChange={handleChange}
-          errors={errors.password}
-        />
-        <FormError>{formError}</FormError>
-        <button type="submit" disabled={submitting}>
-          {submitting ? "Creating account..." : "Create account"}
-        </button>
-      </form>
+      <div className="auth-card">
+        <h1>Create your account</h1>
+        <p className="auth-card__intro">
+          Start cataloguing your library in a few minutes.
+        </p>
+
+        <form onSubmit={handleSubmit} noValidate className="form">
+          <FormField
+            id="username"
+            label="Username"
+            autoComplete="username"
+            autoCapitalize="none"
+            value={values.username}
+            onChange={handleChange}
+            errors={errors.username}
+          />
+          <FormField
+            id="email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            autoCapitalize="none"
+            value={values.email}
+            onChange={handleChange}
+            errors={errors.email}
+          />
+          <FormField
+            id="password"
+            label="Password"
+            type="password"
+            autoComplete="new-password"
+            value={values.password}
+            onChange={handleChange}
+            errors={errors.password}
+          />
+          <FormError>{formError}</FormError>
+          <Button type="submit" disabled={submitting}>
+            {submitting ? "Creating account..." : "Create account"}
+          </Button>
+        </form>
+
+        <p className="auth-card__footer">
+          Already have an account? <Link to="/login">Log in</Link>
+        </p>
+      </div>
     </section>
   );
 }

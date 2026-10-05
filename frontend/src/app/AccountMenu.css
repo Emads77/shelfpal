@@ -1,0 +1,71 @@
+.account-menu {
+  position: relative;
+}
+
+.account-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  min-width: var(--tap-target);
+  min-height: var(--tap-target);
+  padding: 0 var(--space-8);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.account-menu__trigger:hover,
+.account-menu__trigger[aria-expanded="true"] {
+  background: var(--color-surface-sunk);
+}
+
+/* Mobile: only the hamburger icon is visible */
+.account-menu__name,
+.account-menu__chevron {
+  display: none;
+}
+
+.account-menu__panel {
+  position: absolute;
+  top: calc(100% + var(--space-4));
+  right: 0;
+  z-index: 20;
+  min-width: 14rem;
+  padding: var(--space-8);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.account-menu__who {
+  margin: 0;
+  padding: var(--space-8) var(--space-12);
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+}
+
+.account-menu__who strong {
+  display: block;
+  color: var(--color-ink);
+  font-size: var(--text-body);
+  overflow-wrap: anywhere;
+}
+
+.account-menu__logout {
+  width: 100%;
+}
+
+@media (min-width: 48rem) {
+  /* Desktop: name and chevron instead of the hamburger icon */
+  .account-menu__name,
+  .account-menu__chevron {
+    display: inline;
+  }
+
+  .account-menu__menu-icon {
+    display: none;
+  }
+}

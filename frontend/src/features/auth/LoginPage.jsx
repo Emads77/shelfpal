@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router";
 import { ApiError } from "../../api/client.js";
-import { useAuth } from "../../state/useAuth.js";
+import { usePageTitle } from "../../shared/hooks/usePageTitle.js";
+import Button from "../../shared/ui/Button.jsx";
 import FormError from "../../shared/ui/FormError.jsx";
 import FormField from "../../shared/ui/FormField.jsx";
+import { useAuth } from "../../state/useAuth.js";
 import "./auth.css";
 
 const EMPTY_FORM = { email: "", password: "" };
@@ -16,6 +18,8 @@ function validate({ email, password }) {
 }
 
 export default function LoginPage() {
+  usePageTitle("Log in");
+
   const { login, status } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,7 +29,7 @@ export default function LoginPage() {
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  if (status === "authenthicated") return <Navigate to="/" replace />;
+  if (status === "authenticated") return <Navigate to="/" replace />;
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -50,6 +54,7 @@ export default function LoginPage() {
     } catch (err) {
       setSubmitting(false);
       if (err instanceof ApiError && err.status === 401) {
+        // One fixed message: never reveal which field was wrong.
         setFormError("Incorrect email or password.");
       } else if (err instanceof ApiError && err.status === 0) {
         setFormError(err.message);
@@ -61,35 +66,40 @@ export default function LoginPage() {
 
   return (
     <section className="auth-page">
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit} noValidate className="form">
-        <FormField
-          id="email"
-          label="Email"
-          type="email"
-          autoComplete="email"
-          autoCapitalize="none"
-          value={values.email}
-          onChange={handleChange}
-          errors={errors.email}
-        />
-        <FormField
-          id="password"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          value={values.password}
-          onChange={handleChange}
-          errors={errors.password}
-        />
-        <FormError>{formError}</FormError>
-        <button type="submit" disabled={submitting}>
-          {submitting ? "Logging in..." : "Log in"}
-        </button>
-      </form>
-      <p>
-        No account yet? <Link to="/register">Register</Link>
-      </p>
+      <div className="auth-card">
+        <h1>Log in</h1>
+        <p className="auth-card__intro">Welcome back to your library.</p>
+
+        <form onSubmit={handleSubmit} noValidate className="form">
+          <FormField
+            id="email"
+            label="Email"
+            type="email"
+            autoComplete="email"
+            autoCapitalize="none"
+            value={values.email}
+            onChange={handleChange}
+            errors={errors.email}
+          />
+          <FormField
+            id="password"
+            label="Password"
+            type="password"
+            autoComplete="current-password"
+            value={values.password}
+            onChange={handleChange}
+            errors={errors.password}
+          />
+          <FormError>{formError}</FormError>
+          <Button type="submit" disabled={submitting}>
+            {submitting ? "Logging in..." : "Log in"}
+          </Button>
+        </form>
+
+        <p className="auth-card__footer">
+          No account yet? <Link to="/register">Register</Link>
+        </p>
+      </div>
     </section>
   );
 }

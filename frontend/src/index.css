@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
-
 :root {
   /* Colours */
   --color-canvas: #f6f2ea;
@@ -8,18 +6,23 @@
 
   --color-ink: #16303a;
   --color-ink-muted: #5a6b72;
-  --color-ink-faint: #8a979c;
+  --color-ink-faint: #8a979c; /* decorative only, too light for text */
 
-  --color-accent: #0e8f9e;
-  --color-accent-hover: #0b7checo;
+  --color-accent: #0a7280;
+  --color-accent-hover: #085f6b;
   --color-accent-soft: #d9f0f3;
+  --color-on-accent: #ffffff;
 
-  --color-border: #ddd5c7;
+  --color-border: #ddd5c7; /* dividers and card edges */
+  --color-border-input: #78878d; /* form control edges, 3:1 or better */
+
   --color-danger: #9e3b2f;
+  --color-danger-soft: #f6e3e0;
   --color-success: #2f6b4f;
 
   /* Type */
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Literata Variable", Georgia, "Times New Roman", serif;
 
   --text-caption: 0.75rem;
   --text-small: 0.875rem;
@@ -46,20 +49,30 @@
   --space-48: 48px;
   --space-64: 64px;
 
-  /* Shape */
+  /* Shape and elevation */
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-full: 9999px;
+  --shadow-card:
+    0 1px 2px rgba(22, 48, 58, 0.08), 0 2px 8px rgba(22, 48, 58, 0.06);
 
   /* Layout */
   --page-max: 1100px;
   --content-max: 680px;
+  --tap-target: 44px;
+  --bottom-nav-height: 64px;
+  --sidebar-width: 240px;
+  /* Breakpoint 48rem = desktop layout */
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -75,22 +88,34 @@ h1,
 h2,
 h3 {
   margin: 0 0 var(--space-16);
+  font-family: var(--font-serif);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
 }
 
 h1 {
-  font-size: var(--text-display);
+  font-size: clamp(1.75rem, 1.3rem + 1.8vw, var(--text-display));
 }
+
 h2 {
-  font-size: var(--text-heading);
+  font-size: clamp(1.4rem, 1.2rem + 0.8vw, var(--text-heading));
 }
+
 h3 {
   font-size: var(--text-subheading);
 }
 
 a {
   color: var(--color-accent);
+}
+
+a:hover {
+  color: var(--color-accent-hover);
+}
+
+img {
+  display: block;
+  max-width: 100%;
 }
 
 :focus-visible {
@@ -102,4 +127,28 @@ input,
 select,
 button {
   font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Utilities used by the layout shell */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
