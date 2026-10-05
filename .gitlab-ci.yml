@@ -35,8 +35,5 @@ backend-test:
   before_script:
     - cd backend
     - pip install -r requirements.txt
-    - echo "SECRETLEN_START"
-    - echo "len=${#SECRET_KEY}"
-    - echo "SECRETLEN_END"
   script:
     - python manage.py test
