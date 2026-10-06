@@ -19,10 +19,8 @@ class BookcaseApiTests(APITestCase):
         )
         self.client.force_authenticate(self.owner)
 
-        self.bookcase = Bookcase.objects.create(
-            owner=self.owner, name="Living room")
-        self.other_bookcase = Bookcase.objects.create(
-            owner=self.other, name="Office")
+        self.bookcase = Bookcase.objects.create(owner=self.owner, name="Living room")
+        self.other_bookcase = Bookcase.objects.create(owner=self.other, name="Office")
 
     def test_create_bookcase(self):
         response = self.client.post("/api/bookcases/", {"name": "Hallway"})
@@ -80,17 +78,18 @@ class ShelfApiTests(APITestCase):
         )
         self.client.force_authenticate(self.owner)
 
-        self.bookcase = Bookcase.objects.create(
-            owner=self.owner, name="Living room")
-        self.other_bookcase = Bookcase.objects.create(
-            owner=self.other, name="Office")
+        self.bookcase = Bookcase.objects.create(owner=self.owner, name="Living room")
+        self.other_bookcase = Bookcase.objects.create(owner=self.other, name="Office")
 
     def test_create_shelf_in_my_bookcase(self):
         response = self.client.post(
             f"/api/bookcases/{self.bookcase.id}/shelves/", {"name": "Top"}
         )
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED,)
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_201_CREATED,
+        )
         self.assertEqual(response.data["name"], "Top")
         self.assertTrue(Shelf.objects.filter(bookcase=self.bookcase).exists())
 
@@ -105,8 +104,7 @@ class ShelfApiTests(APITestCase):
         self.assertIn("name", response.data)
 
     def test_shelves_of_another_users_bookcase_return_404(self):
-        response = self.client.get(
-            f"/api/bookcases/{self.other_bookcase.id}/shelves/")
+        response = self.client.get(f"/api/bookcases/{self.other_bookcase.id}/shelves/")
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
