@@ -12,7 +12,7 @@ export default function BookCover({ title, coverUrl }) {
       className="book-cover book-cover--generated"
       style={{ background, color }}
       aria-hidden="true"
-      >
+    >
       <span>{title}</span>
     </div>
   );

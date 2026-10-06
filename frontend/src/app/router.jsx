@@ -19,8 +19,11 @@ export const router = createBrowserRouter([
         element: <RequireAuth />,
         children: [
           { index: true, element: <CollectionPage /> },
-          { path: "books/new", element: <PlaceholderPage title="Add a book" /> },
-          { path: "bookcases" , element: <BookcasesPage />},
+          {
+            path: "books/new",
+            element: <PlaceholderPage title="Add a book" />,
+          },
+          { path: "bookcases", element: <BookcasesPage /> },
           { path: "bookcases/:bookcaseId/shelves", element: <ShelvesPage /> },
           { path: "shelves", element: <PlaceholderPage title="Shelves" /> },
           { path: "picker", element: <PlaceholderPage title="Picker" /> },
@@ -30,6 +33,3 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
-
-
-

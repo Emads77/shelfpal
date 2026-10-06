@@ -15,7 +15,7 @@ export default function SearchField({
   return (
     <div
       className={`search-field ${endAction ? "search-field--with-action" : ""}`.trim()}
-      >
+    >
       <label htmlFor={id} className="visually-hidden">
         {label}
       </label>
@@ -29,7 +29,7 @@ export default function SearchField({
         placeholder={placeHolder}
         autoComplete="off"
         {...inputProps}
-        />
+      />
       {endAction && <div className="search-field__end">{endAction}</div>}
     </div>
   );

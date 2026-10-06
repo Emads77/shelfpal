@@ -20,6 +20,11 @@ export default function BookCard({ copy }) {
           </p>
         )}
         <p className="book-card__author">{book.author}</p>
+        {book.pageCount ? (
+          <p className="book-card__pages">
+            {book.pageCount.toLocaleString("en")} pages
+          </p>
+        ) : null}
         <div className="book-card__meta">
           <Badge variant={meta.variant} icon={meta.icon}>
             {meta.label}
