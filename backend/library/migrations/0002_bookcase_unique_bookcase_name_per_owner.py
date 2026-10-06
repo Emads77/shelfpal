@@ -5,15 +5,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('library', '0001_initial'),
+        ("library", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='bookcase',
-            constraint=models.UniqueConstraint(fields=('owner', 'name'), name='unique_bookcase_name_per_owner'),
+            model_name="bookcase",
+            constraint=models.UniqueConstraint(
+                fields=("owner", "name"), name="unique_bookcase_name_per_owner"
+            ),
         ),
     ]

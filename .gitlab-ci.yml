@@ -1,0 +1,39 @@
+stages: [lint, test]
+
+backend-lint:
+  stage: lint
+  image: python:3.12
+  before_script:
+    - cd backend
+    - pip install ruff
+  script:
+    - ruff check .
+    - ruff format --check .
+
+frontend-lint:
+  stage: lint
+  image: node:22
+  before_script:
+    - cd frontend
+    - npm ci
+  script:
+    - npx oxlint
+    - npx prettier --check .
+
+backend-test:
+  stage: test
+  image: python:3.12
+  services:
+    - name: postgres:17
+      alias: postgres
+  variables:
+    POSTGRES_DB: shelfpal_test
+    POSTGRES_USER: shelfpal
+    POSTGRES_PASSWORD: ci_password
+    POSTGRES_HOST: postgres
+    POSTGRES_PORT: "5432"
+  before_script:
+    - cd backend
+    - pip install -r requirements.txt
+  script:
+    - python manage.py test
