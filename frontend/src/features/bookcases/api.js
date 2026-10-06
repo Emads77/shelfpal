@@ -1,23 +1,20 @@
 import { apiRequest } from "../../api/client";
 
-
-
-
 //bookcases
 
 export function getBookcase(id) {
   return apiRequest(`/bookcases/${id}/`);
 }
 
-export function getBookcases(){
+export function getBookcases() {
   return apiRequest("/bookcases/");
 }
 
-export function createBookcase({name}){
- return apiRequest("/bookcases/",{
-  method: "POST",
-  body: {name},
- });
+export function createBookcase({ name }) {
+  return apiRequest("/bookcases/", {
+    method: "POST",
+    body: { name },
+  });
 }
 
 export function removeBookcase(id) {
