@@ -1,23 +1,45 @@
 :root {
-  /* Colours */
-  --color-canvas: #f6f2ea;
-  --color-surface: #ffffff;
-  --color-surface-sunk: #ece6da;
+  /* Palette (raw colours) */
+  --color-cream: #f7f1de;
+  --color-sage: #b0ba99;
+  --color-brown: #9d6638;
+  --color-walnut: #4e220f;
 
-  --color-ink: #16303a;
-  --color-ink-muted: #5a6b72;
-  --color-ink-faint: #8a979c; /* decorative only, too light for text */
+  /* Surfaces */
+  --color-canvas: var(--color-cream);
+  --color-surface: #fcf9ef;
+  --color-surface-sunk: #ebe3cc;
+  --color-sage-soft: #dde1cc;
 
-  --color-accent: #0a7280;
-  --color-accent-hover: #085f6b;
-  --color-accent-soft: #d9f0f3;
+  /* Floating chrome (sidebar, dock) */
+  --color-bar: var(--color-walnut);
+  --color-bar-hover: #62301a;
+  --color-bar-active: #7a4224;
+  --color-on-bar: var(--color-cream);
+  --color-on-bar-muted: #d9cfb8;
+  --color-bar-indicator: var(--color-sage);
+
+  /* Text */
+  --color-ink: var(--color-walnut);
+  --color-ink-muted: #6b5a4c;
+  --color-ink-faint: #a39a8c; /* decorative only, too light for text */
+  --color-link: #7d4b24;
+
+  /* Interactive */
+  --color-accent: var(--color-brown);
+  --color-accent-hover: #834f28;
+  --color-accent-soft: var(--color-sage-soft);
   --color-on-accent: #ffffff;
+  --color-focus: var(--color-walnut);
+  --color-focus-on-bar: var(--color-cream);
 
-  --color-border: #ddd5c7; /* dividers and card edges */
-  --color-border-input: #78878d; /* form control edges, 3:1 or better */
+  /* Lines */
+  --color-border: #d8cdb0; /* dividers and card edges */
+  --color-border-input: #8c7355; /* form control edges, 3:1 or better */
 
-  --color-danger: #9e3b2f;
-  --color-danger-soft: #f6e3e0;
+  /* Status */
+  --color-danger: #a4262c;
+  --color-danger-soft: #f3dcd8;
   --color-success: #2f6b4f;
 
   /* Type */
@@ -52,17 +74,25 @@
   /* Shape and elevation */
   --radius-sm: 6px;
   --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
   --shadow-card:
-    0 1px 2px rgba(22, 48, 58, 0.08), 0 2px 8px rgba(22, 48, 58, 0.06);
+    0 1px 2px rgba(78, 34, 15, 0.1), 0 2px 8px rgba(78, 34, 15, 0.08);
+  --shadow-raised:
+    0 2px 4px rgba(78, 34, 15, 0.1), 0 8px 20px rgba(78, 34, 15, 0.12);
+  --shadow-float:
+    0 4px 8px rgba(78, 34, 15, 0.16), 0 12px 28px rgba(78, 34, 15, 0.22);
 
   /* Layout */
   --page-max: 1100px;
   --content-max: 680px;
   --tap-target: 44px;
-  --bottom-nav-height: 64px;
-  --sidebar-width: 240px;
-  /* Breakpoint 48rem = desktop layout */
+  --topbar-height: 56px;
+  --dock-height: 64px;
+  --dock-gap: 12px;
+  --sidebar-width: 248px;
+  --sidebar-gap: 16px;
 }
 
 *,
@@ -106,11 +136,12 @@ h3 {
 }
 
 a {
-  color: var(--color-accent);
+  color: var(--color-link);
+  text-underline-offset: 0.2em;
 }
 
 a:hover {
-  color: var(--color-accent-hover);
+  color: var(--color-ink);
 }
 
 img {
@@ -119,7 +150,7 @@ img {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
@@ -133,7 +164,15 @@ button {
   cursor: pointer;
 }
 
-/* Utilities used by the layout shell */
+.eyebrow {
+  margin: 0 0 var(--space-4);
+  color: var(--color-ink-muted);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

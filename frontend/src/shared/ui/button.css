@@ -32,6 +32,16 @@
   color: var(--color-ink);
 }
 
+.button--danger {
+  background: var(--color-danger);
+  color: var(--color-on-accent);
+}
+
+.button--danger:hover:not(:disabled) {
+  background: #8a1f24;
+  color: var(--color-on-accent);
+}
+
 .button:disabled {
   opacity: 0.6;
   cursor: not-allowed;

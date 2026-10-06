@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { ChevronDown, Menu } from "lucide-react";
+import { ChevronUp, Menu } from "lucide-react";
 import Button from "../shared/ui/Button.jsx";
 import { useAuth } from "../state/useAuth.js";
 import "./AccountMenu.css";
@@ -37,6 +37,8 @@ export default function AccountMenu() {
     await logout();
   }
 
+  const initial = user.username.charAt(0).toUpperCase();
+
   return (
     <div className="account-menu" ref={rootRef}>
       <button
@@ -46,11 +48,18 @@ export default function AccountMenu() {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((value) => !value)}
-        >
+      >
         <span className="visually-hidden">Account menu: </span>
-        <Menu className="account-menu__icon" aria-hidden="true"/>
+        <Menu className="account-menu__menu-icon" aria-hidden="true" />
+        <span className="account-menu__avatar" aria-hidden="true">
+          {initial}
+        </span>
         <span className="account-menu__name">{user.username}</span>
-        <ChevronDown className="account-menu__chevron" size={18} aria-hidden="true" />
+        <ChevronUp
+          className="account-menu__chevron"
+          size={18}
+          aria-hidden="true"
+        />
       </button>
 
       {open && (
@@ -60,10 +69,10 @@ export default function AccountMenu() {
           </p>
           <Button
             variant="secondary"
-            className="account_menu__logout"
+            className="account-menu__logout"
             onClick={handleLogout}
           >
-            Logout
+            Log out
           </Button>
         </div>
       )}

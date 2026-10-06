@@ -16,28 +16,37 @@ export default function Layout() {
         Skip to main content
       </a>
 
-      <header className="app-header">
-        <Link to="/" className="app-brand">
-          ShelfPal
-        </Link>
-        {signedIn && <AccountMenu />}
-        {status === "anonymous" && (
-          <nav className="guest-nav" aria-label="Account">
-            <NavLink to="/login">Log in</NavLink>
-            <NavLink to="/register">Register</NavLink>
-          </nav>
-        )}
-      </header>
-
       {signedIn && (
-        <nav className="app-nav" aria-label="Main">
-          {navItems.map(({ to, label, icon: Icon, end }) => (
-            <NavLink key={to} to={to} end={end} className="app-nav__link">
-              <Icon size={24} aria-hidden="true" />
-              <span>{label}</span>
-            </NavLink>
-          ))}
-        </nav>
+        <header className="app-chrome">
+          <Link to="/" className="app-brand">
+            ShelfPal
+          </Link>
+
+          <nav className="app-nav" aria-label="Main">
+            {navItems.map(({ to, label, icon: Icon, end }) => (
+              <NavLink key={to} to={to} end={end} className="app-nav__link">
+                <Icon size={22} aria-hidden="true" />
+                <span>{label}</span>
+              </NavLink>
+            ))}
+          </nav>
+
+          <AccountMenu />
+        </header>
+      )}
+
+      {!signedIn && (
+        <header className="guest-header">
+          <Link to="/" className="app-brand">
+            ShelfPal
+          </Link>
+          {status === "anonymous" && (
+            <nav className="guest-nav" aria-label="Account">
+              <NavLink to="/login">Log in</NavLink>
+              <NavLink to="/register">Register</NavLink>
+            </nav>
+          )}
+        </header>
       )}
 
       <main id="main" className="app-main" tabIndex={-1}>

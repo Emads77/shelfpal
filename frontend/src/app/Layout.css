@@ -1,46 +1,23 @@
 .app-shell {
-  --header-height: 56px;
-
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto 1fr;
-  grid-template-areas:
-    "header"
-    "main";
   min-height: 100dvh;
 }
 
-/* Skip link: hidden until it receives keyboard focus */
 .skip-link {
   position: absolute;
   top: var(--space-8);
   left: var(--space-8);
   z-index: 100;
   padding: var(--space-8) var(--space-16);
+  border: 2px solid var(--color-ink);
   border-radius: var(--radius-sm);
-  background: var(--color-ink);
-  color: var(--color-surface);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-weight: var(--weight-semibold);
   transform: translateY(-200%);
 }
 
 .skip-link:focus {
   transform: translateY(0);
-}
-
-/* Top bar */
-.app-header {
-  grid-area: header;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-16);
-  height: var(--header-height);
-  padding: 0 var(--space-16);
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-surface);
 }
 
 .app-brand {
@@ -52,7 +29,29 @@
 }
 
 .app-brand:hover {
-  color: var(--color-accent-hover);
+  color: var(--color-link);
+}
+
+.app-main {
+  width: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--space-16) var(--space-16) var(--space-32);
+}
+
+.app-main:focus {
+  outline: none;
+}
+
+.guest-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  max-width: var(--page-max);
+  min-height: var(--topbar-height);
+  margin: 0 auto;
+  padding: 0 var(--space-16);
 }
 
 .guest-nav {
@@ -73,35 +72,40 @@
   text-decoration: none;
 }
 
-/* Main content */
-.app-main {
-  grid-area: main;
-  width: 100%;
-  max-width: var(--page-max);
-  margin: 0 auto;
-  padding: var(--space-24) var(--space-16);
-}
-
-.app-main:focus {
-  outline: none;
-}
-
-/* Mobile: leave room for the bottom nav */
-.app-shell--signed-in .app-main {
-  padding-bottom: calc(var(--bottom-nav-height) + var(--space-24));
-}
-
-/* Main navigation: bottom bar on mobile */
-.app-nav {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
+.app-chrome {
+  position: sticky;
+  top: 0;
   z-index: 10;
   display: flex;
-  height: var(--bottom-nav-height);
-  border-top: 1px solid var(--color-border);
-  background: var(--color-surface);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  height: var(--topbar-height);
+  padding: 0 var(--space-16);
+  background: var(--color-canvas);
+}
+
+.app-shell--signed-in .app-main {
+  padding-bottom: calc(
+    var(--dock-height) + var(--dock-gap) * 2 + var(--space-24)
+  );
+}
+
+.app-nav {
+  position: fixed;
+  right: var(--dock-gap);
+  bottom: var(--dock-gap);
+  left: var(--dock-gap);
+  z-index: 10;
+  display: flex;
+  gap: var(--space-4);
+  height: var(--dock-height);
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--color-bar);
+  box-shadow: var(--shadow-float);
 }
 
 .app-nav__link {
@@ -111,51 +115,82 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  min-height: var(--tap-target);
-  color: var(--color-ink-muted);
+  border-radius: var(--radius-lg);
+  color: var(--color-on-bar-muted);
   font-size: var(--text-caption);
   font-weight: var(--weight-medium);
   text-decoration: none;
 }
 
 .app-nav__link:hover {
-  color: var(--color-ink);
+  background: var(--color-bar-hover);
+  color: var(--color-on-bar);
 }
 
 .app-nav__link[aria-current="page"] {
-  color: var(--color-accent);
+  background: var(--color-bar-active);
+  color: var(--color-on-bar);
   font-weight: var(--weight-semibold);
-  box-shadow: inset 0 3px 0 var(--color-accent);
+  box-shadow: inset 0 3px 0 var(--color-bar-indicator);
 }
 
-/* Desktop: sidebar */
+.app-nav :focus-visible {
+  outline-color: var(--color-focus-on-bar);
+  outline-offset: -4px;
+}
+
 @media (min-width: 48rem) {
-  .app-header {
-    padding: 0 var(--space-24);
-  }
-
   .app-shell--signed-in {
-    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
-    grid-template-areas:
-      "header header"
-      "nav main";
+    display: grid;
+    grid-template-columns: calc(var(--sidebar-width) + var(--sidebar-gap) * 2) minmax(
+        0,
+        1fr
+      );
   }
 
-  .app-shell--signed-in .app-main {
-    padding: var(--space-32);
+  .app-chrome {
+    position: sticky;
+    top: var(--sidebar-gap);
+    z-index: 10;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: var(--space-4);
+    height: calc(100dvh - var(--sidebar-gap) * 2);
+    margin: var(--sidebar-gap);
+    padding: var(--space-24) var(--space-12) var(--space-12);
+    border-radius: var(--radius-xl);
+    background: var(--color-bar);
+    box-shadow: var(--shadow-float);
+    align-self: start;
+  }
+
+  .app-chrome :focus-visible {
+    outline-color: var(--color-focus-on-bar);
+  }
+
+  .app-chrome .app-brand {
+    padding: 0 var(--space-12) var(--space-16);
+    color: var(--color-on-bar);
+    font-size: var(--text-heading);
+  }
+
+  .app-chrome .app-brand:hover {
+    color: var(--color-bar-indicator);
   }
 
   .app-nav {
-    grid-area: nav;
-    position: sticky;
-    top: var(--header-height);
-    align-self: start;
+    position: static;
     flex-direction: column;
+    flex: 1;
     gap: var(--space-4);
-    height: calc(100dvh - var(--header-height));
-    padding: var(--space-16) var(--space-12);
-    border-top: 0;
-    border-right: 1px solid var(--color-border);
+    height: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   .app-nav__link {
@@ -163,18 +198,29 @@
     flex-direction: row;
     justify-content: flex-start;
     gap: var(--space-12);
+    min-height: var(--tap-target);
     padding: 0 var(--space-12);
     border-radius: var(--radius-sm);
     font-size: var(--text-body);
   }
 
-  .app-nav__link:hover {
-    background: var(--color-surface-sunk);
+  .app-nav :focus-visible {
+    outline-offset: 2px;
   }
 
   .app-nav__link[aria-current="page"] {
-    background: var(--color-accent-soft);
-    color: var(--color-ink);
-    box-shadow: none;
+    box-shadow: inset 4px 0 0 var(--color-bar-indicator);
+  }
+
+  .app-shell--signed-in .app-main {
+    padding: var(--space-32) var(--space-32) var(--space-48) var(--space-16);
+  }
+
+  .guest-header {
+    padding: 0 var(--space-32);
+  }
+
+  .app-shell--guest .app-main {
+    padding: var(--space-24) var(--space-32) var(--space-48);
   }
 }

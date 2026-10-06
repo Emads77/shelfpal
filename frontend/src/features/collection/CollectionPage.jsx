@@ -1,14 +1,184 @@
-import { useAuth } from "../../state/useAuth.js";
-import {usePageTitle} from "../../shared/hooks/usePageTitle.js";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router";
+import { BookOpen, Plus, SearchX } from "lucide-react";
+import { usePageTitle } from "../../shared/hooks/usePageTitle.js";
+import Button from "../../shared/ui/Button.jsx";
+import EmptyState from "../../shared/ui/EmptyState.jsx";
+import FilterChips from "../../shared/ui/FilterChips.jsx";
+import PageHeader from "../../shared/ui/PageHeader.jsx";
+import SearchField from "../../shared/ui/SearchField.jsx";
+import { getCollection } from "./api.js";
+import BookCard from "./BookCard.jsx";
+import { STATUS_META, STATUS_ORDER } from "./statusMeta.js";
+import "./collection.css";
+
+function matchesQuery({ book }, query) {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return true;
+  return [book.title, book.series, book.author]
+    .filter(Boolean)
+    .some((field) => field.toLowerCase().includes(needle));
+}
+
+function pluralize(count, word) {
+  return `${count} ${word}${count === 1 ? "" : "s"}`;
+}
+
+function AddBookLink({ children }) {
+  return (
+    <Link to="/books/new" className="button button--primary">
+      <Plus size={18} aria-hidden="true" />
+      {children}
+    </Link>
+  );
+}
 
 export default function CollectionPage() {
-  const { user } = useAuth();
   usePageTitle("Collection");
+
+  const [copies, setCopies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
+  const [attempt, setAttempt] = useState(0);
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState("all");
+
+  useEffect(() => {
+    let cancelled = false;
+    getCollection()
+      .then((data) => {
+        if (!cancelled) setCopies(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setLoadError(err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [attempt]);
+
+  function retry() {
+    setLoadError(null);
+    setLoading(true);
+    setAttempt((n) => n + 1);
+  }
+
+  function clearFilters() {
+    setQuery("");
+    setStatus("all");
+  }
+
+  const visible = useMemo(
+    () =>
+      copies.filter(
+        (copy) =>
+          (status === "all" || copy.status === status) &&
+          matchesQuery(copy, query),
+      ),
+    [copies, query, status],
+  );
+
+  const statusOptions = [
+    { value: "all", label: "All", count: copies.length },
+    ...STATUS_ORDER.map((value) => ({
+      value,
+      label: STATUS_META[value].label,
+      count: copies.filter((copy) => copy.status === value).length,
+    })),
+  ];
+
+  const bookcaseCount = new Set(copies.map((copy) => copy.shelf.bookcase)).size;
+  let subtitle;
+  if (loading) subtitle = "Loading your books...";
+  else if (!loadError && copies.length === 0) subtitle = "Nothing here yet.";
+  else if (!loadError) {
+    subtitle = `${pluralize(copies.length, "book")} in ${pluralize(bookcaseCount, "bookcase")}`;
+  }
+  const filtering = query.trim() !== "" || status !== "all";
 
   return (
     <section>
-      <h1>My book collection</h1>
-      <p>Logged in as {user.username}.</p>
+      <PageHeader
+        eyebrow="Your library"
+        title="My collection"
+        subtitle={subtitle}
+        actions={<AddBookLink>Add book</AddBookLink>}
+      />
+
+      {loading && <p role="status">Loading your collection...</p>}
+
+      {loadError && (
+        <div role="alert" className="collection-error">
+          <p className="form-error">
+            Couldn't load your collection. Check your connection and try again.
+          </p>
+          <Button variant="secondary" onClick={retry}>
+            Try again
+          </Button>
+        </div>
+      )}
+
+      {!loading && !loadError && copies.length === 0 && (
+        <EmptyState
+          icon={BookOpen}
+          title="Start your collection"
+          action={<AddBookLink>Add your first book</AddBookLink>}
+        >
+          Add books by scanning a barcode or searching by title, then place them
+          on your shelves.
+        </EmptyState>
+      )}
+
+      {!loading && !loadError && copies.length > 0 && (
+        <>
+          <div className="collection-toolbar">
+            <SearchField
+              label="Search your collection"
+              placeholder="Search by title, author, or series"
+              value={query}
+              onChange={setQuery}
+            />
+            <FilterChips
+              label="Reading status"
+              options={statusOptions}
+              value={status}
+              onChange={setStatus}
+            />
+          </div>
+
+          <p role="status" className="visually-hidden">
+            Showing {visible.length} of {copies.length} books
+          </p>
+
+          {visible.length === 0 ? (
+            <EmptyState
+              icon={SearchX}
+              title="No books match"
+              action={
+                <Button variant="secondary" onClick={clearFilters}>
+                  Clear filters
+                </Button>
+              }
+            >
+              Try a different search or reading status.
+            </EmptyState>
+          ) : (
+            <>
+              <h2 className="visually-hidden">
+                {filtering ? "Matching books" : "All books"}
+              </h2>
+              <ul className="book-grid">
+                {visible.map((copy) => (
+                  <BookCard key={copy.id} copy={copy} />
+                ))}
+              </ul>
+            </>
+          )}
+        </>
+      )}
     </section>
   );
 }
