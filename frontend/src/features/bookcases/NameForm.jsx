@@ -1,18 +1,20 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Button from "../../shared/ui/Button.jsx";
 import { errorMessage } from "./errorMessage.js";
-import "./shelves.css";
+import "./bookcases.css";
 
 export default function NameForm({
   label,
   placeholder,
   initialValue = "",
   submitLabel,
+  cancelLabel = "Cancel",
   onSubmit,
   onCancel,
   inputRef,
   autoFocus = false,
-                                 }) {
+  stayOpen = false,
+}) {
   const [value, setValue] = useState(initialValue);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -35,7 +37,7 @@ export default function NameForm({
       setError("Name is required.");
       return;
     }
-    if (onCancel && trimmed === initialValue) {
+    if (onCancel && !stayOpen && trimmed === initialValue) {
       onCancel();
       return;
     }
@@ -44,7 +46,7 @@ export default function NameForm({
     setError("");
     try {
       await onSubmit(trimmed);
-      if (!onCancel) {
+      if (stayOpen) {
         setValue("");
         ref.current?.focus();
       }
@@ -98,7 +100,7 @@ export default function NameForm({
         </Button>
         {onCancel && (
           <Button variant="secondary" onClick={onCancel} disabled={saving}>
-            Cancel
+            {cancelLabel}
           </Button>
         )}
       </div>

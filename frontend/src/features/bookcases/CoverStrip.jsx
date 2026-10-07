@@ -1,5 +1,5 @@
 import BookCover from "../collection/BookCover.jsx";
-import "./shelves.css";
+import "./bookcases.css";
 
 const PHONE_VISIBLE = 4;
 

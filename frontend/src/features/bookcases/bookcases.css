@@ -1,4 +1,4 @@
-.shelves-error {
+.bookcases-error {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -249,8 +249,32 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-4);
-  padding: var(--space-12) 0 var(--space-8);
+  padding: var(--space-12) 0 var(--space-12);
   border-top: 1px solid rgba(78, 34, 15, 0.18);
+}
+
+.add-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: var(--color-cream, #f7f1de);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 1px 3px rgba(34, 15, 5, 0.35);
+}
+
+.add-tile:hover {
+  background: var(--color-accent-hover);
+}
+
+.add-tile:active {
+  box-shadow: inset 0 2px 4px rgba(34, 15, 5, 0.35);
 }
 
 .shelf-list {

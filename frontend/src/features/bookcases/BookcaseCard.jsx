@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { ChevronDown, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
 import ActionsMenu from "../../shared/ui/ActionsMenu.jsx";
 import ConfirmDialog from "../../shared/ui/ConfirmDialog.jsx";
 import BulkShelvesForm from "./BulkShelvesForm.jsx";
@@ -7,7 +7,7 @@ import NameForm from "./NameForm.jsx";
 import ShelfRow from "./ShelfRow.jsx";
 import { errorMessage } from "./errorMessage.js";
 import { pluralize } from "./pluralize.js";
-import "./shelves.css";
+import "./bookcases.css";
 
 function booksNote(count) {
   if (count === 0) return "It has no books.";
@@ -53,13 +53,12 @@ export default function BookcaseCard({
 }) {
   const panelId = useId();
   const toggleRef = useRef(null);
-  const addShelfRef = useRef(null);
-  const bulkButtonRef = useRef(null);
+  const addTileRef = useRef(null);
   const wasRenaming = useRef(false);
-  const wasBulkOpen = useRef(false);
+  const previousAddMode = useRef("closed");
 
   const [renaming, setRenaming] = useState(false);
-  const [bulkOpen, setBulkOpen] = useState(false);
+  const [addMode, setAddMode] = useState("closed"); // "closed" | "single" | "bulk"
   const [confirm, setConfirm] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -73,13 +72,15 @@ export default function BookcaseCard({
   }, [renaming]);
 
   useEffect(() => {
-    if (wasBulkOpen.current && !bulkOpen) bulkButtonRef.current?.focus();
-    wasBulkOpen.current = bulkOpen;
-  }, [bulkOpen]);
+    if (previousAddMode.current !== "closed" && addMode === "closed") {
+      addTileRef.current?.focus();
+    }
+    previousAddMode.current = addMode;
+  }, [addMode]);
 
   useEffect(() => {
     if (autoFocusAddShelf && open) {
-      addShelfRef.current?.focus();
+      setAddMode("single");
       onAutoFocused();
     }
   }, [autoFocusAddShelf, open, onAutoFocused]);
@@ -188,34 +189,51 @@ export default function BookcaseCard({
         )}
 
         <div className="bookcase-card__add">
-          {bulkOpen ? (
+          {addMode === "closed" && (
+            <button
+              ref={addTileRef}
+              type="button"
+              className="add-tile"
+              aria-label={`Add a shelf to ${name}`}
+              title="Add a shelf"
+              onClick={() => setAddMode("single")}
+            >
+              <Plus size={22} aria-hidden="true" />
+            </button>
+          )}
+
+          {addMode === "single" && (
+            <>
+              <NameForm
+                label={`Add a shelf to ${name}`}
+                placeholder="Shelf name"
+                submitLabel="Add shelf"
+                cancelLabel="Done"
+                autoFocus
+                stayOpen
+                onSubmit={(shelfName) => onAddShelves([shelfName])}
+                onCancel={() => setAddMode("closed")}
+              />
+              <button
+                type="button"
+                className="link-button"
+                onClick={() => setAddMode("bulk")}
+              >
+                Add several shelves
+              </button>
+            </>
+          )}
+
+          {addMode === "bulk" && (
             <BulkShelvesForm
               bookcaseName={name}
               existingNames={shelves.map((shelf) => shelf.name)}
               onSubmit={async (names) => {
                 await onAddShelves(names);
-                setBulkOpen(false);
+                setAddMode("closed");
               }}
-              onCancel={() => setBulkOpen(false)}
+              onCancel={() => setAddMode("closed")}
             />
-          ) : (
-            <>
-              <NameForm
-                label={`Add a shelf to ${name}`}
-                placeholder="Add a shelf"
-                submitLabel="Add shelf"
-                inputRef={addShelfRef}
-                onSubmit={(shelfName) => onAddShelves([shelfName])}
-              />
-              <button
-                ref={bulkButtonRef}
-                type="button"
-                className="link-button"
-                onClick={() => setBulkOpen(true)}
-              >
-                Add several shelves
-              </button>
-            </>
           )}
         </div>
       </div>

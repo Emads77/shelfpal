@@ -1,139 +1,204 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Library, Plus } from "lucide-react";
+import { usePageTitle } from "../../shared/hooks/usePageTitle.js";
+import Button from "../../shared/ui/Button.jsx";
+import EmptyState from "../../shared/ui/EmptyState.jsx";
+import PageHeader from "../../shared/ui/PageHeader.jsx";
 import {
-  getBookcases,
   createBookcase,
+  createShelves,
+  getLibraryOverview,
   removeBookcase,
+  removeShelf,
   updateBookcase,
+  updateShelf,
 } from "./api.js";
-import { Link } from "react-router";
+import BookcaseCard from "./BookcaseCard.jsx";
+import NameForm from "./NameForm.jsx";
+import { pluralize } from "./pluralize.js";
+import "./bookcases.css";
 
 export default function BookcasesPage() {
-  const [bookcases, setBookcases] = useState([]);
+  usePageTitle("Bookcases");
+
+  const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [name, setName] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState(null);
-  const [editingId, setEditingId] = useState(null);
-  const [editingName, setEditingName] = useState("");
+  const [loadError, setLoadError] = useState(null);
+  const [attempt, setAttempt] = useState(0);
+  const [openIds, setOpenIds] = useState(() => new Set());
+  const [adding, setAdding] = useState(false);
+  const [pendingFocusId, setPendingFocusId] = useState(null);
+  const addButtonRef = useRef(null);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const data = await getBookcases();
-        setBookcases(data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
+    let cancelled = false;
+    getLibraryOverview()
+      .then((data) => {
+        if (!cancelled) setOverview(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setLoadError(err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [attempt]);
+
+  function retry() {
+    setLoadError(null);
+    setLoading(true);
+    setAttempt((n) => n + 1);
+  }
+
+  const refresh = useCallback(async () => {
+    try {
+      setOverview(await getLibraryOverview());
+    } catch (err) {
+      setLoadError(err);
     }
-    load();
   }, []);
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    if (!name.trim()) return;
-    setSaving(true);
-    setFormError(null);
-    try {
-      const created = await createBookcase({ name });
-      setBookcases([...bookcases, created]);
-      setName("");
-    } catch (err) {
-      setFormError(err);
-    } finally {
-      setSaving(false);
-    }
+  async function mutate(action) {
+    const result = await action();
+    await refresh();
+    return result;
   }
 
-  async function handleDelete(id) {
-    try {
-      await removeBookcase(id);
-      setBookcases(bookcases.filter((b) => b.id !== id));
-    } catch (err) {
-      setFormError(err);
-    }
+  const handleAutoFocused = useCallback(() => setPendingFocusId(null), []);
+
+  function toggle(bookcaseId) {
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(bookcaseId)) next.delete(bookcaseId);
+      else next.add(bookcaseId);
+      return next;
+    });
   }
 
-  function startEdit(bookcase) {
-    setEditingId(bookcase.id);
-    setEditingName(bookcase.name);
-    setFormError(null);
+  async function handleAddBookcase(name) {
+    const created = await mutate(() => createBookcase(name));
+    setOpenIds((prev) => new Set(prev).add(created.id));
+    setPendingFocusId(created.id);
+    setAdding(false);
   }
 
-  function cancelEdit() {
-    setEditingId(null);
-    setEditingName("");
+  async function handleDeleteBookcase(bookcaseId) {
+    await mutate(() => removeBookcase(bookcaseId));
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      next.delete(bookcaseId);
+      return next;
+    });
+    setTimeout(() => addButtonRef.current?.focus(), 0);
   }
 
-  async function handleUpdate(id) {
-    if (!editingName.trim()) return;
-    try {
-      const updated = await updateBookcase(id, editingName);
-      setBookcases(bookcases.map((b) => (b.id === id ? updated : b)));
-      cancelEdit();
-    } catch (err) {
-      setFormError(err);
-    }
+  const bookcases = overview?.bookcases ?? [];
+  const ready = !loading && !loadError;
+
+  let subtitle;
+  if (loading) subtitle = "Loading your bookcases...";
+  else if (overview && !loadError) {
+    const shelfCount = bookcases.reduce((sum, b) => sum + b.shelf_count, 0);
+    const bookCount =
+      bookcases.reduce((sum, b) => sum + b.book_count, 0) +
+      overview.unassigned_count;
+    subtitle = [
+      pluralize(bookcases.length, "bookcase"),
+      pluralize(shelfCount, "shelf", "shelves"),
+      pluralize(bookCount, "book"),
+    ].join(" · ");
   }
 
   return (
     <section>
-      <h1>Bookcases</h1>
+      <PageHeader
+        eyebrow="Your library"
+        title="Bookcases"
+        subtitle={subtitle}
+        actions={
+          ready ? (
+            <Button ref={addButtonRef} onClick={() => setAdding(true)}>
+              <Plus size={18} aria-hidden="true" />
+              Add bookcase
+            </Button>
+          ) : null
+        }
+      />
 
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="bookcase-name">Name</label>
-        <input
-          id="bookcase-name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          disabled={saving}
-        />
-        <button type="submit" disabled={saving || !name.trim()}>
-          {saving ? "Adding..." : "Add bookcase"}
-        </button>
-      </form>
+      {loading && <p role="status">Loading your bookcases...</p>}
 
-      {formError && (
-        <p role="alert">{formError.data?.name ?? formError.message}</p>
+      {loadError && (
+        <div role="alert" className="bookcases-error">
+          <p className="form-error">
+            Couldn't load your bookcases. Check your connection and try again.
+          </p>
+          <Button variant="secondary" onClick={retry}>
+            Try again
+          </Button>
+        </div>
       )}
-      {loading && <p>Loading...</p>}
-      {error && <p role="alert">{error.message}</p>}
-      {!loading && !error && bookcases.length === 0 && (
-        <p>No bookcases yet. Add your first one above.</p>
-      )}
-      {!loading && !error && bookcases.length > 0 && (
-        <ul>
-          {bookcases.map((b) => (
-            <li key={b.id}>
-              {editingId === b.id ? (
-                <>
-                  <input
-                    value={editingName}
-                    onChange={(e) => setEditingName(e.target.value)}
-                    aria-label="Bookcase name"
-                  />
-                  <button type="button" onClick={() => handleUpdate(b.id)}>
-                    Save
-                  </button>
-                  <button type="button" onClick={cancelEdit}>
-                    Cancel
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link to={`/bookcases/${b.id}/shelves`}>{b.name}</Link>
 
-                  <button type="button" onClick={() => startEdit(b)}>
-                    Edit
-                  </button>
-                  <button type="button" onClick={() => handleDelete(b.id)}>
-                    Delete
-                  </button>
-                </>
-              )}
-            </li>
+      {ready && adding && (
+        <section className="card add-bookcase" aria-labelledby="add-bookcase-title">
+          <h2 id="add-bookcase-title" className="add-bookcase__title">
+            New bookcase
+          </h2>
+          <NameForm
+            label="Bookcase name"
+            placeholder="e.g. Living room"
+            submitLabel="Add bookcase"
+            autoFocus
+            onSubmit={handleAddBookcase}
+            onCancel={() => {
+              setAdding(false);
+              addButtonRef.current?.focus();
+            }}
+          />
+        </section>
+      )}
+
+      {ready && bookcases.length === 0 && !adding && (
+        <EmptyState
+          icon={Library}
+          title="No bookcases yet"
+          action={
+            <Button onClick={() => setAdding(true)}>
+              <Plus size={18} aria-hidden="true" />
+              Add your first bookcase
+            </Button>
+          }
+        >
+          Bookcases and shelves should mirror the ones in your home, so you can find your books easily.
+        </EmptyState>
+      )}
+
+      {ready && bookcases.length > 0 && (
+        <ul className="bookcase-list">
+          {bookcases.map((bookcase) => (
+            <BookcaseCard
+              key={bookcase.id}
+              bookcase={bookcase}
+              open={openIds.has(bookcase.id)}
+              onToggle={() => toggle(bookcase.id)}
+              onRename={(name) =>
+                mutate(() => updateBookcase(bookcase.id, name))
+              }
+              onDelete={() => handleDeleteBookcase(bookcase.id)}
+              onAddShelves={(names) =>
+                mutate(() => createShelves(bookcase.id, names))
+              }
+              onRenameShelf={(shelfId, name) =>
+                mutate(() => updateShelf(bookcase.id, shelfId, name))
+              }
+              onDeleteShelf={(shelfId) =>
+                mutate(() => removeShelf(bookcase.id, shelfId))
+              }
+              autoFocusAddShelf={pendingFocusId === bookcase.id}
+              onAutoFocused={handleAutoFocused}
+            />
           ))}
         </ul>
       )}

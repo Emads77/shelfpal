@@ -3,7 +3,7 @@ import Button from "../../shared/ui/Button.jsx";
 import { errorMessage } from "./errorMessage.js";
 import { pluralize } from "./pluralize.js";
 import { MAX_SHELVES, suggestShelfNames } from "./shelfNames.js";
-import "./shelves.css";
+import "./bookcases.css";
 
 const DEFAULT_COUNT = 3;
 

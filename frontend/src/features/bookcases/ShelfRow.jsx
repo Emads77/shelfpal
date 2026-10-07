@@ -4,7 +4,7 @@ import ActionsMenu from "../../shared/ui/ActionsMenu.jsx";
 import CoverStrip from "./CoverStrip.jsx";
 import NameForm from "./NameForm.jsx";
 import { pluralize } from "./pluralize.js";
-import "./shelves.css";
+import "./bookcases.css";
 
 export default function ShelfRow({ shelf, onRename, onRequestDelete }) {
   const [renaming, setRenaming] = useState(false);
