@@ -11,7 +11,7 @@ export default function CoverStrip({ covers, total }) {
     <div
       className={`cover-strip ${covers.length === 0 ? "cover-strip--empty" : ""}`.trim()}
       aria-hidden="true"
-      >
+    >
       <div className="cover-strip__books">
         {covers.length === 0 && (
           <span className="cover-strip__empty-text">No books yet</span>

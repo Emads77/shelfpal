@@ -58,7 +58,9 @@ export default function BookcaseCard({
   const previousAddMode = useRef("closed");
 
   const [renaming, setRenaming] = useState(false);
-  const [addMode, setAddMode] = useState("closed"); // "closed" | "single" | "bulk"
+  const [addMode, setAddMode] = useState(
+    autoFocusAddShelf ? "single" : "closed",
+  ); // "closed" | "single" | "bulk"
   const [confirm, setConfirm] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -79,11 +81,8 @@ export default function BookcaseCard({
   }, [addMode]);
 
   useEffect(() => {
-    if (autoFocusAddShelf && open) {
-      setAddMode("single");
-      onAutoFocused();
-    }
-  }, [autoFocusAddShelf, open, onAutoFocused]);
+    if (autoFocusAddShelf) onAutoFocused();
+  }, [autoFocusAddShelf, onAutoFocused]);
 
   function askToDelete(target) {
     setDeleteError("");
@@ -174,7 +173,9 @@ export default function BookcaseCard({
 
       <div id={panelId} className="bookcase-card__panel" hidden={!open}>
         {shelves.length === 0 ? (
-          <p className="bookcase-card__empty">This bookcase has no shelves yet.</p>
+          <p className="bookcase-card__empty">
+            This bookcase has no shelves yet.
+          </p>
         ) : (
           <ul className="shelf-list">
             {shelves.map((shelf) => (

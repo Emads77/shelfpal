@@ -50,7 +50,7 @@ export default function ActionsMenu({ label, items, triggerRef }) {
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
         onClick={() => setOpen((value) => !value)}
-        >
+      >
         <EllipsisVertical size={20} aria-hidden="true" />
       </IconButton>
 
@@ -64,7 +64,7 @@ export default function ActionsMenu({ label, items, triggerRef }) {
                   type="button"
                   className={`actions-menu__item ${item.danger ? "actions-menu__item--danger" : ""}`.trim()}
                   onClick={() => select(item)}
-                  >
+                >
                   {Icon && <Icon size={18} aria-hidden="true" />}
                   {item.label}
                 </button>

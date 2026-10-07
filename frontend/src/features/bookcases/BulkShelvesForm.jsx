@@ -11,11 +11,12 @@ export default function BulkShelvesForm({
   bookcaseName,
   existingNames,
   onSubmit,
-  onCancel,}) {
+  onCancel,
+}) {
   const [countText, setCountText] = useState(String(DEFAULT_COUNT));
   const [names, setNames] = useState(() =>
-  suggestShelfNames(bookcaseName, existingNames, DEFAULT_COUNT),
-    );
+    suggestShelfNames(bookcaseName, existingNames, DEFAULT_COUNT),
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const id = useId();
@@ -34,16 +35,16 @@ export default function BulkShelvesForm({
 
     const wanted = Math.min(count, MAX_SHELVES);
     setNames((previous) =>
-    wanted <= previous.length
-    ? previous.slice(0, wanted)
-    : [
-        ...previous,
-        ...suggestShelfNames(
-          bookcaseName,
-          [...existingNames, ...previous],
-          wanted - previous.length,
-        ),
-      ],
+      wanted <= previous.length
+        ? previous.slice(0, wanted)
+        : [
+            ...previous,
+            ...suggestShelfNames(
+              bookcaseName,
+              [...existingNames, ...previous],
+              wanted - previous.length,
+            ),
+          ],
     );
   }
 
@@ -145,5 +146,5 @@ export default function BulkShelvesForm({
         </Button>
       </div>
     </form>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { apiRequest } from "../../api/client.js"
+import { apiRequest } from "../../api/client.js";
 
 export function getLibraryOverview() {
   return apiRequest("/overview/");

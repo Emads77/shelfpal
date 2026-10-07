@@ -14,7 +14,7 @@ export default function IconButton({
       title={label}
       className={`icon-button ${className}`.trim()}
       {...props}
-      >
+    >
       {children}
     </button>
   );

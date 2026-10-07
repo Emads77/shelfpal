@@ -11,7 +11,7 @@ export default function ConfirmDialog({
   error = "",
   onConfirm,
   onCancel,
-                                      }) {
+}) {
   const dialogRef = useRef(null);
   const titleId = useId();
 
@@ -31,7 +31,7 @@ export default function ConfirmDialog({
         event.preventDefault();
         if (!busy) onCancel();
       }}
-      >
+    >
       <h2 id={titleId} className="confirm-dialog__title">
         {title}
       </h2>

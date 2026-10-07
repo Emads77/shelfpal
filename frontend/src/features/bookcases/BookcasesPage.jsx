@@ -79,9 +79,10 @@ export default function BookcasesPage() {
   }
 
   async function handleAddBookcase(name) {
-    const created = await mutate(() => createBookcase(name));
+    const created = await createBookcase(name);
     setOpenIds((prev) => new Set(prev).add(created.id));
     setPendingFocusId(created.id);
+    await refresh();
     setAdding(false);
   }
 
@@ -142,7 +143,10 @@ export default function BookcasesPage() {
       )}
 
       {ready && adding && (
-        <section className="card add-bookcase" aria-labelledby="add-bookcase-title">
+        <section
+          className="card add-bookcase"
+          aria-labelledby="add-bookcase-title"
+        >
           <h2 id="add-bookcase-title" className="add-bookcase__title">
             New bookcase
           </h2>
@@ -171,7 +175,8 @@ export default function BookcasesPage() {
             </Button>
           }
         >
-          Bookcases and shelves should mirror the ones in your home, so you can find your books easily.
+          Bookcases and shelves should mirror the ones in your home, so you can
+          find your books easily.
         </EmptyState>
       )}
 
