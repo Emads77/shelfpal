@@ -30,6 +30,7 @@ class Bookcase(models.Model):
     )
 
     class Meta:
+        ordering = ["id"]
         constraints = [
             models.UniqueConstraint(
                 fields=["owner", "name"], name="unique_bookcase_name_per_owner"
@@ -47,6 +48,7 @@ class Shelf(models.Model):
     )
 
     class Meta:
+        ordering = ["id"]
         constraints = [
             models.UniqueConstraint(
                 fields=["bookcase", "name"], name="unique_shelf_per_bookcase"

@@ -24,8 +24,42 @@ class ShelfSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "bookcase"]
 
 
+class ShelfBulkCreateSerializer(serializers.Serializer):
+    names = serializers.ListField(
+        child=serializers.CharField(max_length=200),
+        allow_empty=False,
+        max_length=50,
+    )
+
+
 class CopySerializer(serializers.ModelSerializer):
     class Meta:
         model = Copy
         fields = ["id", "owner", "book", "shelf"]
         read_only_fields = ["id", "owner"]
+
+
+class PreviewCoverSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+    cover = serializers.CharField(allow_blank=True)
+
+
+class ShelfOverviewSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    book_count = serializers.IntegerField()
+    preview_covers = PreviewCoverSerializer(many=True)
+
+
+class BookcaseOverviewSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    shelf_count = serializers.IntegerField()
+    book_count = serializers.IntegerField()
+    shelves = ShelfOverviewSerializer(many=True)
+
+
+class LibraryOverviewSerializer(serializers.Serializer):
+    bookcases = BookcaseOverviewSerializer(many=True)
+    unassigned_count = serializers.IntegerField()
