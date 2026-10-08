@@ -13,7 +13,7 @@ class Book(models.Model):
 
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name="created_books",
@@ -61,7 +61,7 @@ class Copy(models.Model):
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="copies"
     )
-    book = models.ForeignKey(Book, on_delete=models.PROTECT, related_name="copies")
+    book = models.ForeignKey(Book, on_delete=models.RESTRICT, related_name="copies")
     shelf = models.ForeignKey(
         Shelf, on_delete=models.SET_NULL, null=True, blank=True, related_name="copies"
     )
