@@ -9,9 +9,11 @@ import PageHeader from "../../shared/ui/PageHeader.jsx";
 import { deleteCopies, moveCopies } from "./api.js";
 import CopyCard from "./CopyCard.jsx";
 import MoveCopiesDialog from "./MoveCopiesDialog.jsx";
+import SelectionBar from "./SelectionBar.jsx";
 import { errorMessage } from "./errorMessage.js";
 import { pluralize } from "./pluralize.js";
 import { useCopiesView } from "./useCopiesView.js";
+import { useSelection } from "./useSelection.js";
 import "./copies.css";
 
 function describeTarget(bookcases, shelfId) {
@@ -27,12 +29,15 @@ function describeTarget(bookcases, shelfId) {
 export default function BookListPage({ shelfId = null, bookcaseId = null }) {
   const { overview, copies, loading, error, retry, reload } =
     useCopiesView(shelfId);
+  const { selected, toggle, selectAll, clear } = useSelection();
+  const [selecting, setSelecting] = useState(false);
   const [pending, setPending] = useState(null);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState("");
   const [notice, setNotice] = useState("");
   const listRef = useRef(null);
   const backRef = useRef(null);
+  const selectButtonRef = useRef(null);
 
   const unassignedView = shelfId === null;
   const bookcase = overview?.bookcases.find((item) => item.id === bookcaseId);
@@ -41,6 +46,10 @@ export default function BookListPage({ shelfId = null, bookcaseId = null }) {
     !unassignedView &&
     (error?.status === 404 || (!loading && !error && !shelf));
   const ready = !loading && !error && !missing;
+
+  const selectedCopies = copies.filter((copy) => selected.has(copy.id));
+  const allSelected =
+    copies.length > 0 && selectedCopies.length === copies.length;
 
   usePageTitle(unassignedView ? "Unassigned" : (shelf?.name ?? "Shelf"));
 
@@ -58,16 +67,47 @@ export default function BookListPage({ shelfId = null, bookcaseId = null }) {
     setTimeout(() => (listRef.current ?? backRef.current)?.focus(), 0);
   }
 
-  function askDelete(selected) {
+  function stopSelecting() {
+    setSelecting(false);
+    clear();
+  }
+
+  function handleToggleSelecting() {
+    if (selecting) {
+      stopSelecting();
+    } else {
+      setNotice("");
+      setSelecting(true);
+    }
+  }
+
+  function handleCancelSelecting() {
+    stopSelecting();
+    selectButtonRef.current?.focus();
+  }
+
+  function handleToggleAll() {
+    if (allSelected) {
+      clear();
+    } else {
+      selectAll(copies.map((copy) => copy.id));
+    }
+  }
+
+  function askMove(ids) {
+    setPending({ kind: "move", ids });
+  }
+
+  function askDelete(selectedList) {
     setActionError("");
     setPending({
       kind: "delete",
-      ids: selected.map((copy) => copy.id),
+      ids: selectedList.map((copy) => copy.id),
       title:
-        selected.length === 1
-          ? `Delete "${selected[0].book.title}"?`
-          : `Delete ${pluralize(selected.length, "book")}?`,
-      several: selected.length > 1,
+        selectedList.length === 1
+          ? `Delete “${selectedList[0].book.title}”?`
+          : `Delete ${pluralize(selectedList.length, "book")}?`,
+      several: selectedList.length > 1,
     });
   }
 
@@ -77,6 +117,7 @@ export default function BookListPage({ shelfId = null, bookcaseId = null }) {
     await moveCopies(ids, targetShelfId);
     await reload();
     setNotice(`Moved ${pluralize(ids.length, "book")} to ${targetName}.`);
+    stopSelecting();
     setPending(null);
     focusAfterChange();
   }
@@ -89,6 +130,7 @@ export default function BookListPage({ shelfId = null, bookcaseId = null }) {
       await deleteCopies(ids);
       await reload();
       setNotice(`Deleted ${pluralize(ids.length, "book")}.`);
+      stopSelecting();
       setPending(null);
       focusAfterChange();
     } catch (err) {
@@ -125,7 +167,7 @@ export default function BookListPage({ shelfId = null, bookcaseId = null }) {
           icon={Library}
           title="Shelf not found"
           action={
-            <Link to="/bookcases" className="button button-secondary">
+            <Link to="/bookcases" className="button button--secondary">
               Back to bookcases
             </Link>
           }
@@ -154,21 +196,48 @@ export default function BookListPage({ shelfId = null, bookcaseId = null }) {
       )}
 
       {ready && copies.length > 0 && (
-        <ul
-          ref={listRef}
-          tabIndex={-1}
-          aria-label="Books"
-          className="copy-grid"
-        >
-          {copies.map((copy) => (
-            <CopyCard
-              key={copy.id}
-              copy={copy}
-              onMove={() => setPending({ kind: "move", ids: [copy.id] })}
-              onDelete={() => askDelete([copy])}
+        <>
+          <div className="copy-toolbar">
+            <Button
+              ref={selectButtonRef}
+              variant="secondary"
+              aria-pressed={selecting}
+              onClick={handleToggleSelecting}
+            >
+              Select multiple
+            </Button>
+          </div>
+
+          <ul
+            ref={listRef}
+            tabIndex={-1}
+            aria-label="Books"
+            className="copy-grid"
+          >
+            {copies.map((copy) => (
+              <CopyCard
+                key={copy.id}
+                copy={copy}
+                selecting={selecting}
+                selected={selected.has(copy.id)}
+                onToggle={() => toggle(copy.id)}
+                onMove={() => askMove([copy.id])}
+                onDelete={() => askDelete([copy])}
+              />
+            ))}
+          </ul>
+
+          {selecting && (
+            <SelectionBar
+              count={selectedCopies.length}
+              allSelected={allSelected}
+              onToggleAll={handleToggleAll}
+              onMove={() => askMove(selectedCopies.map((copy) => copy.id))}
+              onDelete={() => askDelete(selectedCopies)}
+              onCancel={handleCancelSelecting}
             />
-          ))}
-        </ul>
+          )}
+        </>
       )}
 
       {pending?.kind === "move" && (
