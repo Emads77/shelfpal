@@ -6,7 +6,8 @@ import LoginPage from "../features/auth/LoginPage.jsx";
 import RegisterPage from "../features/auth/RegisterPage.jsx";
 import CollectionPage from "../features/collection/CollectionPage.jsx";
 import BookcasesPage from "../features/bookcases/BookcasesPage.jsx";
-import ShelvesPage from "../features/bookcases/ShelvesPage.jsx";
+import ShelfPage from "../features/bookcases/ShelfPage.jsx";
+import UnassignedPage from "../features/bookcases/UnassignedPage.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -24,8 +25,11 @@ export const router = createBrowserRouter([
             element: <PlaceholderPage title="Add a book" />,
           },
           { path: "bookcases", element: <BookcasesPage /> },
-          { path: "bookcases/:bookcaseId/shelves", element: <ShelvesPage /> },
-          { path: "shelves", element: <PlaceholderPage title="Shelves" /> },
+          { path: "bookcases/unassigned", element: <UnassignedPage /> },
+          {
+            path: "bookcases/:bookcaseId/shelves/:shelfId",
+            element: <ShelfPage />,
+          },
           { path: "picker", element: <PlaceholderPage title="Picker" /> },
         ],
       },
