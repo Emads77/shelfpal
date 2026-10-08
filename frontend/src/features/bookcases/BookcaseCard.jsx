@@ -182,6 +182,7 @@ export default function BookcaseCard({
               <ShelfRow
                 key={shelf.id}
                 shelf={shelf}
+                to={`/bookcases/${bookcase.id}/shelves/${shelf.id}`}
                 onRename={(newName) => onRenameShelf(shelf.id, newName)}
                 onRequestDelete={() => askToDelete({ kind: "shelf", shelf })}
               />

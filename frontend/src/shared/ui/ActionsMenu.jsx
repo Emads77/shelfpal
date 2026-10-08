@@ -15,7 +15,7 @@ export default function ActionsMenu({ label, items, triggerRef }) {
     if (!open) return undefined;
 
     function closeIfOutside(event) {
-      if (rootRef.current && !rootRef.current.constains(event.target)) {
+      if (rootRef.current && !rootRef.current.contains(event.target)) {
         setOpen(false);
       }
     }

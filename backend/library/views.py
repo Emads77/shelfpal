@@ -7,6 +7,11 @@ from rest_framework.views import APIView
 from library import services
 from library.serializers import (
     BookcaseSerializer,
+    CopyIdsSerializer,
+    CopyListQuerySerializer,
+    CopyMoveSerializer,
+    CopyReadSerializer,
+    CopyUpdateSerializer,
     LibraryOverviewSerializer,
     ShelfBulkCreateSerializer,
     ShelfSerializer,
@@ -84,3 +89,40 @@ class LibraryOverviewView(APIView):
     def get(self, request):
         data = services.get_library_overview(request.user)
         return Response(LibraryOverviewSerializer(data).data)
+
+
+class CopyViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+    lookup_value_regex = r"\d+"
+
+    def list(self, request):
+        query = CopyListQuerySerializer(data=request.query_params)
+        query.is_valid(raise_exception=True)
+        copies = services.list_copies(request.user, **query.validated_data)
+        return Response(CopyReadSerializer(copies, many=True).data)
+
+    def partial_update(self, request, pk=None):
+        serializer = CopyUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        copy = services.update_copy(
+            request.user, pk, serializer.validated_data["is_read"]
+        )
+        return Response(CopyReadSerializer(copy).data)
+
+    @action(detail=False, methods=["post"], url_path="move")
+    def bulk_move(self, request):
+        serializer = CopyMoveSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        count = services.move_copies(
+            request.user,
+            serializer.validated_data["ids"],
+            serializer.validated_data["shelf"],
+        )
+        return Response({"count": count})
+
+    @action(detail=False, methods=["post"], url_path="delete")
+    def bulk_delete(self, request):
+        serializer = CopyIdsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        count = services.delete_copies(request.user, serializer.validated_data["ids"])
+        return Response({"count": count})

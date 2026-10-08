@@ -1,0 +1,90 @@
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--tap-target);
+  margin-bottom: var(--space-4);
+  color: var(--color-link, var(--color-accent));
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.notice {
+  margin: 0 0 var(--space-16);
+  padding: var(--space-12) var(--space-16);
+  border-radius: var(--radius-sm);
+  background: var(--color-sage-soft);
+  color: var(--color-ink);
+}
+
+.copy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: var(--space-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.copy-card {
+  position: relative;
+  display: flex;
+  gap: var(--space-16);
+  padding: var(--space-12);
+}
+
+.copy-card .book-cover {
+  flex: none;
+  width: 4.5rem;
+}
+
+.copy-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.copy-card__title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-body);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.copy-card__author {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+}
+
+.copy-card__meta {
+  margin-top: auto;
+  padding-top: var(--space-12);
+}
+
+.copy-card__menu {
+  flex: none;
+  align-self: flex-start;
+  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) 0 0;
+}
+
+/* Move dialog */
+.move-dialog__field {
+  margin-bottom: var(--space-16);
+}
+
+.move-dialog__label {
+  display: block;
+  margin-bottom: var(--space-4);
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+}
+
+.move-dialog__error {
+  margin: 0 0 var(--space-16);
+}

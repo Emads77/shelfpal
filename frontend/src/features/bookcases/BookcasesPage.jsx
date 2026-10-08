@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Library, Plus } from "lucide-react";
+import { Link } from "react-router";
+import { ChevronRight, Inbox, Library, Plus } from "lucide-react";
 import { usePageTitle } from "../../shared/hooks/usePageTitle.js";
 import Button from "../../shared/ui/Button.jsx";
 import EmptyState from "../../shared/ui/EmptyState.jsx";
@@ -162,6 +163,30 @@ export default function BookcasesPage() {
             }}
           />
         </section>
+      )}
+
+      {ready && overview.unassigned_count > 0 && (
+        <Link
+          to="/bookcases/unassigned"
+          className="card card--interactive unassigned-card"
+        >
+          <Inbox
+            className="unassigned-card__icon"
+            size={28}
+            aria-hidden="true"
+          />
+          <span className="unassigned-card__text">
+            <span className="unassigned-card__title">Unassigned</span>
+            <span className="unassigned-card__meta">
+              {pluralize(overview.unassigned_count, "book")} not on a shelf
+            </span>
+          </span>
+          <ChevronRight
+            className="unassigned-card__chevron"
+            size={22}
+            aria-hidden="true"
+          />
+        </Link>
       )}
 
       {ready && bookcases.length === 0 && !adding && (

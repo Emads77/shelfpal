@@ -38,3 +38,22 @@ export function removeShelf(bookcaseId, shelfId) {
     method: "DELETE",
   });
 }
+
+export function getCopies({ shelf, unassigned } = {}) {
+  const params = new URLSearchParams();
+  if (shelf !== undefined) params.set("shelf", String(shelf));
+  if (unassigned) params.set("unassigned", "true");
+  const query = params.toString();
+  return apiRequest(`/copies/${query ? `?${query}` : ""}`);
+}
+
+export function moveCopies(ids, shelfId) {
+  return apiRequest("/copies/move/", {
+    method: "POST",
+    body: { ids, shelf: shelfId },
+  });
+}
+
+export function deleteCopies(ids) {
+  return apiRequest("/copies/delete/", { method: "POST", body: { ids } });
+}

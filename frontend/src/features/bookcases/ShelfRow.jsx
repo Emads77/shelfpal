@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 import { Pencil, Trash2 } from "lucide-react";
 import ActionsMenu from "../../shared/ui/ActionsMenu.jsx";
 import CoverStrip from "./CoverStrip.jsx";
@@ -6,7 +7,7 @@ import NameForm from "./NameForm.jsx";
 import { pluralize } from "./pluralize.js";
 import "./bookcases.css";
 
-export default function ShelfRow({ shelf, onRename, onRequestDelete }) {
+export default function ShelfRow({ shelf, to, onRename, onRequestDelete }) {
   const [renaming, setRenaming] = useState(false);
   const menuRef = useRef(null);
   const wasRenaming = useRef(false);
@@ -33,7 +34,11 @@ export default function ShelfRow({ shelf, onRename, onRequestDelete }) {
           />
         ) : (
           <>
-            <h3 className="shelf-row__name">{shelf.name}</h3>
+            <h3 className="shelf-row__name">
+              <Link to={to} className="shelf-row__link">
+                {shelf.name}
+              </Link>
+            </h3>
             <div className="shelf-row__meta">
               <p className="shelf-row__count">
                 {pluralize(shelf.book_count, "book")}

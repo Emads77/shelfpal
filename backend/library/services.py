@@ -152,3 +152,50 @@ def get_library_overview(owner):
 
     unassigned = Copy.objects.filter(owner=owner, shelf__isnull=True).count()
     return {"bookcases": overview, "unassigned_count": unassigned}
+
+
+def list_copies(owner, shelf=None, unassigned=False):
+    copies = Copy.objects.filter(owner=owner).select_related("book").order_by("-id")
+    if unassigned:
+        return copies.filter(shelf__isnull=True)
+    if shelf is not None:
+        get_object_or_404(Shelf, id=shelf, bookcase__owner=owner)
+        return copies.filter(shelf_id=shelf)
+    return copies
+
+
+def update_copy(owner, copy_id, is_read):
+    copy = get_object_or_404(
+        Copy.objects.select_related("book"), id=copy_id, owner=owner
+    )
+    copy.is_read = is_read
+    copy.save(update_fields=["is_read"])
+    return copy
+
+
+def move_copies(owner, copy_ids, shelf_id):
+    ids = set(copy_ids)
+    shelf = None
+    if shelf_id is not None:
+        shelf = get_object_or_404(Shelf, id=shelf_id, bookcase__owner=owner)
+
+    with transaction.atomic():
+        moved = Copy.objects.filter(owner=owner, id__in=ids).update(shelf=shelf)
+        if moved != len(ids):
+            raise exceptions.ValidationError(
+                {"ids": "One or more of these books were not found."}
+            )
+        return moved
+
+
+def delete_copies(owner, copy_ids):
+    ids = set(copy_ids)
+
+    with transaction.atomic():
+        _, deleted_per_model = Copy.objects.filter(owner=owner, id__in=ids).delete()
+        deleted = deleted_per_model.get("library.Copy", 0)
+        if deleted != len(ids):
+            raise exceptions.ValidationError(
+                {"ids": "One or more of these books were not found."}
+            )
+        return deleted
