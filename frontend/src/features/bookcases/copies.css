@@ -1,0 +1,201 @@
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--tap-target);
+  margin-bottom: var(--space-4);
+  color: var(--color-link, var(--color-accent));
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.notice {
+  margin: 0 0 var(--space-16);
+  padding: var(--space-12) var(--space-16);
+  border-radius: var(--radius-sm);
+  background: var(--color-sage-soft);
+  color: var(--color-ink);
+}
+
+.copy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+  gap: var(--space-12);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.copy-card {
+  position: relative;
+  display: flex;
+  gap: var(--space-16);
+  padding: var(--space-12);
+}
+
+.copy-card .book-cover {
+  flex: none;
+  width: 4.5rem;
+}
+
+.copy-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.copy-card__title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-body);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.copy-card__author {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+}
+
+.copy-card__meta {
+  margin-top: auto;
+  padding-top: var(--space-12);
+}
+
+.copy-card__menu {
+  flex: none;
+  align-self: flex-start;
+  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) 0 0;
+}
+
+/* Move dialog */
+.move-dialog__field {
+  margin-bottom: var(--space-16);
+}
+
+.move-dialog__label {
+  display: block;
+  margin-bottom: var(--space-4);
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+}
+
+.move-dialog__error {
+  margin: 0 0 var(--space-16);
+}
+
+.copy-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-12);
+}
+
+.button[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  background: var(--color-sage-soft);
+}
+
+.copy-card--selected {
+  outline: 2px solid var(--color-accent);
+  background: var(--color-sage-soft);
+}
+
+.copy-card:has(.copy-card__check:focus-visible) {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.copy-card__pick {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
+.copy-card__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.copy-card__check {
+  position: relative;
+  z-index: 1;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: calc((var(--tap-target) - 1.5rem) / 2);
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.selection-bar {
+  --selection-bar-offset: var(--space-8);
+  position: sticky;
+  bottom: var(--selection-bar-offset);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  margin-top: var(--space-16);
+  padding: var(--space-12) var(--space-16);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-float);
+}
+
+.selection-bar__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+}
+
+.selection-bar__count {
+  margin: 0;
+  font-weight: var(--weight-semibold);
+}
+
+.selection-bar .selection-bar__toggle {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.selection-bar .selection-bar__delete {
+  color: var(--color-danger);
+}
+
+.selection-bar__actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+}
+
+@media (min-width: 48rem) {
+  .selection-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .selection-bar__summary {
+    justify-content: flex-start;
+    gap: var(--space-16);
+  }
+
+  .selection-bar__actions {
+    display: flex;
+    gap: var(--space-8);
+  }
+}
