@@ -6,21 +6,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('library', '0003_alter_bookcase_options_alter_shelf_options_and_more'),
+        ("library", "0003_alter_bookcase_options_alter_shelf_options_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='book',
-            name='created_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='created_books', to=settings.AUTH_USER_MODEL),
+            model_name="book",
+            name="created_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="created_books",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='copy',
-            name='book',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.RESTRICT, related_name='copies', to='library.book'),
+            model_name="copy",
+            name="book",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.RESTRICT,
+                related_name="copies",
+                to="library.book",
+            ),
         ),
     ]
