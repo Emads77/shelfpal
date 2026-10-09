@@ -57,3 +57,7 @@ export function moveCopies(ids, shelfId) {
 export function deleteCopies(ids) {
   return apiRequest("/copies/delete/", { method: "POST", body: { ids } });
 }
+
+export function addBookManually(data) {
+  return apiRequest("/copies/", { method: "POST", body: data });
+}

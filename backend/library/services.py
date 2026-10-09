@@ -5,7 +5,7 @@ from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework import exceptions
 
-from library.models import Bookcase, Copy, Shelf
+from library.models import Book, Bookcase, Copy, Shelf
 
 PREVIEW_LIMIT = 8
 
@@ -199,3 +199,27 @@ def delete_copies(owner, copy_ids):
                 {"ids": "One or more of these books were not found."}
             )
         return deleted
+
+
+def add_book_manually(owner, data):
+    shelf = None
+    shelf_id = data.get("shelf")
+    if shelf_id is not None:
+        shelf = get_object_or_404(Shelf, id=shelf_id, bookcase__owner=owner)
+
+    with transaction.atomic():
+        book = Book.objects.create(
+            created_by=owner,
+            title=data["title"],
+            author=data["author"],
+            isbn=data.get("isbn"),
+            publisher=data.get("publisher", ""),
+            cover=data.get("cover", ""),
+        )
+        return Copy.objects.create(owner=owner, book=book, shelf=shelf)
+
+
+def get_copy(owner, copy_id):
+    return get_object_or_404(
+        Copy.objects.select_related("book"), id=copy_id, owner=owner
+    )

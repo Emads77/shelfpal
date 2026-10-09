@@ -108,3 +108,24 @@ class CopyIdsSerializer(serializers.Serializer):
 class CopyMoveSerializer(CopyIdsSerializer):
     # An explicit null means "unassigned"
     shelf = serializers.IntegerField(allow_null=True, min_value=1)
+
+
+class ManualBookCreateSerializer(serializers.Serializer):
+    title = serializers.CharField(max_length=200)
+    author = serializers.CharField(max_length=200)
+    isbn = serializers.CharField(
+        max_length=17, required=False, allow_blank=True, allow_null=True
+    )
+    publisher = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    cover = serializers.URLField(required=False, allow_blank=True)
+    shelf = serializers.IntegerField(required=False, allow_null=True, min_value=1)
+
+    def validate_isbn(self, value):
+        if value is None:
+            return None
+        value = value.replace("-", "").strip()
+        if not value:
+            return None
+        if len(value) not in (10, 13):
+            raise serializers.ValidationError("ISBN must be 10 or 13 characters.")
+        return value

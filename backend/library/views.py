@@ -13,6 +13,7 @@ from library.serializers import (
     CopyReadSerializer,
     CopyUpdateSerializer,
     LibraryOverviewSerializer,
+    ManualBookCreateSerializer,
     ShelfBulkCreateSerializer,
     ShelfSerializer,
 )
@@ -100,6 +101,16 @@ class CopyViewSet(viewsets.ViewSet):
         query.is_valid(raise_exception=True)
         copies = services.list_copies(request.user, **query.validated_data)
         return Response(CopyReadSerializer(copies, many=True).data)
+
+    def create(self, request):
+        serializer = ManualBookCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        copy = services.add_book_manually(request.user, serializer.validated_data)
+        return Response(CopyReadSerializer(copy).data, status=201)
+
+    def retrieve(self, request, pk=None):
+        copy = services.get_copy(request.user, pk)
+        return Response(CopyReadSerializer(copy).data)
 
     def partial_update(self, request, pk=None):
         serializer = CopyUpdateSerializer(data=request.data)
