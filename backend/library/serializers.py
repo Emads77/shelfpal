@@ -129,3 +129,19 @@ class ManualBookCreateSerializer(serializers.Serializer):
         if len(value) not in (10, 13):
             raise serializers.ValidationError("ISBN must be 10 or 13 characters.")
         return value
+
+
+class ISBNLookupSerializer(serializers.Serializer):
+    isbn = serializers.CharField()
+
+    def validate_isbn(self, value):
+        value = value.replace("-", "").strip()
+        if len(value) not in (10, 13):
+            raise serializers.ValidationError("ISBN must be 10 or 13 characters.")
+        return value
+
+
+class BookSummarySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ["id", "isbn", "title", "author", "publisher", "cover"]

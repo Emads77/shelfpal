@@ -5,13 +5,16 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from library import services
+from library.external import ExternalLookupError
 from library.serializers import (
     BookcaseSerializer,
+    BookSummarySerializer,
     CopyIdsSerializer,
     CopyListQuerySerializer,
     CopyMoveSerializer,
     CopyReadSerializer,
     CopyUpdateSerializer,
+    ISBNLookupSerializer,
     LibraryOverviewSerializer,
     ManualBookCreateSerializer,
     ShelfBulkCreateSerializer,
@@ -137,3 +140,20 @@ class CopyViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         count = services.delete_copies(request.user, serializer.validated_data["ids"])
         return Response({"count": count})
+
+
+class BookLookupView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = ISBNLookupSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        try:
+            book = services.get_or_fetch_book(serializer.validated_data["isbn"])
+        except ExternalLookupError:
+            return Response(
+                {"detail": "Book lookup is unavailable right now."}, status=503
+            )
+        if book is None:
+            return Response({"detail": "No book found for this ISBN."}, status=404)
+        return Response(BookSummarySerializer(book).data)
