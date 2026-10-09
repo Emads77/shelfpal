@@ -61,4 +61,3 @@ export function deleteCopies(ids) {
 export function addBookManually(data) {
   return apiRequest("/copies/", { method: "POST", body: data });
 }
-
