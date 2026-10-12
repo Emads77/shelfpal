@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -62,6 +63,7 @@ SIMPLE_JWT = {
 }
 
 MIDDLEWARE = [
+    "config.middleware.RequestLogMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -158,3 +160,36 @@ MAILERS = {
         "BACKEND": "django.core.mail.backends.console.EmailBackend",
     },
 }
+
+# Logging
+# LOG_FORMAT=json (one JSON object per line, for Grafana when we deploy)
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+LOG_FORMAT = os.getenv("LOG_FORMAT", "plain")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "request_id": {"()": "config.log_utils.RequestIdFilter"},
+    },
+    "formatters": {
+        "json": {"()": "config.log_utils.JsonFormatter"},
+        "plain": {
+            "format": "%(asctime)s %(levelname)s %(name)s [%(request_id)s] %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "filters": ["request_id"],
+            "formatter": LOG_FORMAT if LOG_FORMAT in ("json", "plain") else "plain",
+        },
+    },
+    "root": {"handlers": ["console"], "level": LOG_LEVEL},
+}
+
+# Makes tests not print into the test output
+if "test" in sys.argv:
+    LOGGING["handlers"]["console"]["class"] = "logging.NullHandler"
+    LOGGING["handlers"]["console"].pop("filters", None)
+    LOGGING["handlers"]["console"].pop("formatter", None)
