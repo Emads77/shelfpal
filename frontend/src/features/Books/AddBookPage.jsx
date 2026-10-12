@@ -147,7 +147,7 @@ export default function AddBookPage() {
           disabled={saving}
           onChange={(e) => update("shelf", e.target.value)}
         >
-          <option value="">No shelf (unshelved)</option>
+          <option value="">No shelf (unassigned)</option>
           {bookcases.map((bookcase) => (
             <optgroup key={bookcase.id} label={bookcase.name}>
               {bookcase.shelves.map((shelf) => (

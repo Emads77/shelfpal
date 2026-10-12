@@ -7,3 +7,7 @@ export const STATUS_META = {
 };
 
 export const STATUS_ORDER = ["unread", "reading", "finished"];
+
+export function statusOf(copy) {
+  return copy.status ?? (copy.is_read ? "finished" : "unread");
+}

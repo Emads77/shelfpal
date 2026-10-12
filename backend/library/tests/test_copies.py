@@ -71,6 +71,29 @@ class CopyApiTests(LibraryTestMixin, APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_list_includes_the_location_of_shelved_copies(self):
+        response = self.client.get("/api/copies/")
+
+        by_id = {item["id"]: item for item in response.data}
+        self.assertEqual(
+            by_id[self.first.id]["location"],
+            {
+                "bookcase_id": self.bookcase.id,
+                "bookcase_name": "Living room",
+                "shelf_id": self.top.id,
+                "shelf_name": "Top",
+            },
+        )
+
+    def test_location_is_null_for_unassigned_copies(self):
+        response = self.client.get("/api/copies/?unassigned=true")
+
+        self.assertIsNone(response.data[0]["location"])
+
+    def test_listing_does_not_query_per_copy(self):
+        with self.assertNumQueries(1):
+            self.client.get("/api/copies/")
+
     # Updating
 
     def test_mark_a_copy_as_read(self):
