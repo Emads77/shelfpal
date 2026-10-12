@@ -7,9 +7,9 @@ import EmptyState from "../../shared/ui/EmptyState.jsx";
 import FilterChips from "../../shared/ui/FilterChips.jsx";
 import PageHeader from "../../shared/ui/PageHeader.jsx";
 import SearchField from "../../shared/ui/SearchField.jsx";
-import { getCollection } from "./api.js";
+import { getCopies } from "../bookcases/api.js";
 import BookCard from "./BookCard.jsx";
-import { STATUS_META, STATUS_ORDER } from "./statusMeta.js";
+import { STATUS_META, STATUS_ORDER, statusOf } from "./statusMeta.js";
 import "./collection.css";
 
 function matchesQuery({ book }, query) {
@@ -45,7 +45,7 @@ export default function CollectionPage() {
 
   useEffect(() => {
     let cancelled = false;
-    getCollection()
+    getCopies()
       .then((data) => {
         if (!cancelled) setCopies(data);
       })
@@ -75,7 +75,7 @@ export default function CollectionPage() {
     () =>
       copies.filter(
         (copy) =>
-          (status === "all" || copy.status === status) &&
+          (status === "all" || statusOf(copy) === status) &&
           matchesQuery(copy, query),
       ),
     [copies, query, status],
@@ -86,16 +86,22 @@ export default function CollectionPage() {
     ...STATUS_ORDER.map((value) => ({
       value,
       label: STATUS_META[value].label,
-      count: copies.filter((copy) => copy.status === value).length,
-    })),
+      count: copies.filter((copy) => statusOf(copy) === value).length,
+    })).filter((option) => option.count > 0 || option.value === status),
   ];
 
-  const bookcaseCount = new Set(copies.map((copy) => copy.shelf.bookcase)).size;
+  const bookcaseCount = new Set(
+    copies.map((copy) => copy.location?.bookcase_id).filter(Boolean),
+  ).size;
   let subtitle;
   if (loading) subtitle = "Loading your books...";
   else if (!loadError && copies.length === 0) subtitle = "Nothing here yet.";
   else if (!loadError) {
-    subtitle = `${pluralize(copies.length, "book")} in ${pluralize(bookcaseCount, "bookcase")}`;
+    const books = pluralize(copies.length, "book");
+    subtitle =
+      bookcaseCount === 0
+        ? books
+        : `${books} in ${pluralize(bookcaseCount, "bookcase")}`;
   }
   const filtering = query.trim() !== "" || status !== "all";
 

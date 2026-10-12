@@ -75,10 +75,22 @@ class CopyBookSerializer(serializers.ModelSerializer):
 
 class CopyReadSerializer(serializers.ModelSerializer):
     book = CopyBookSerializer(read_only=True)
+    location = serializers.SerializerMethodField()
 
     class Meta:
         model = Copy
-        fields = ["id", "book", "shelf", "is_read"]
+        fields = ["id", "book", "shelf", "location", "is_read"]
+
+    def get_location(self, copy):
+        shelf = copy.shelf
+        if shelf is None:
+            return None
+        return {
+            "bookcase_id": shelf.bookcase.id,
+            "bookcase_name": shelf.bookcase.name,
+            "shelf_id": shelf.id,
+            "shelf_name": shelf.name,
+        }
 
 
 class CopyListQuerySerializer(serializers.Serializer):

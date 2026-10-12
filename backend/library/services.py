@@ -157,7 +157,11 @@ def get_library_overview(owner):
 
 
 def list_copies(owner, shelf=None, unassigned=False):
-    copies = Copy.objects.filter(owner=owner).select_related("book").order_by("-id")
+    copies = (
+        Copy.objects.filter(owner=owner)
+        .select_related("book", "shelf__bookcase")
+        .order_by("-id")
+    )
     if unassigned:
         return copies.filter(shelf__isnull=True)
     if shelf is not None:
