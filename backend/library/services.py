@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 from django.db import IntegrityError, transaction
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import exceptions
 
@@ -250,3 +250,18 @@ def get_or_fetch_book(isbn):
             )
     except IntegrityError:
         return Book.objects.get(isbn=isbn, created_by__isnull=True)
+
+
+def add_book_by_book_id(owner, book_id, shelf_id=None):
+    shelf = None
+    if shelf_id is not None:
+        shelf = get_object_or_404(Shelf, id=shelf_id, bookcase__owner=owner)
+
+    book = get_object_or_404(
+        Book, Q(created_by__isnull=True) | Q(created_by=owner), id=book_id
+    )
+
+    with transaction.atomic():
+        copy = Copy.objects.create(owner=owner, book=book, shelf=shelf)
+
+    return Copy.objects.select_related("book", "shelf__bookcase").get(id=copy.id)

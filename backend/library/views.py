@@ -9,6 +9,7 @@ from library.external import ExternalLookupError
 from library.serializers import (
     BookcaseSerializer,
     BookSummarySerializer,
+    CopyFromBookCreateSerializer,
     CopyIdsSerializer,
     CopyListQuerySerializer,
     CopyMoveSerializer,
@@ -106,9 +107,18 @@ class CopyViewSet(viewsets.ViewSet):
         return Response(CopyReadSerializer(copies, many=True).data)
 
     def create(self, request):
-        serializer = ManualBookCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        copy = services.add_book_manually(request.user, serializer.validated_data)
+        if "book" in request.data:
+            serializer = CopyFromBookCreateSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            copy = services.add_book_by_book_id(
+                request.user,
+                serializer.validated_data["book"],
+                serializer.validated_data.get("shelf"),
+            )
+        else:
+            serializer = ManualBookCreateSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            copy = services.add_book_manually(request.user, serializer.validated_data)
         return Response(CopyReadSerializer(copy).data, status=201)
 
     def retrieve(self, request, pk=None):

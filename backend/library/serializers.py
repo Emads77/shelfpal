@@ -153,6 +153,11 @@ class ISBNLookupSerializer(serializers.Serializer):
         return value
 
 
+class CopyFromBookCreateSerializer(serializers.Serializer):
+    book = serializers.IntegerField()
+    shelf = serializers.IntegerField(required=False, allow_null=True)
+
+
 class BookSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
