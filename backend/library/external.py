@@ -34,7 +34,7 @@ def fetch_by_isbn(isbn):
     for source in SOURCES:
         try:
             result = source(isbn)
-        except requests.RequestException, ValueError:
+        except (requests.RequestException, ValueError):
             failures += 1
             continue
         if result and result["title"]:
