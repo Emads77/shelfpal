@@ -8,7 +8,8 @@ import CollectionPage from "../features/collection/CollectionPage.jsx";
 import BookcasesPage from "../features/bookcases/BookcasesPage.jsx";
 import ShelfPage from "../features/bookcases/ShelfPage.jsx";
 import UnassignedPage from "../features/bookcases/UnassignedPage.jsx";
-import AddBookPage from "../features/Books/AddBookPage.jsx";
+import AddBookPage from "../features/books/AddBookPage.jsx";
+import ScanBookPage from "../features/books/ScanBookPage.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ export const router = createBrowserRouter([
           {
             path: "books/new",
             element: <AddBookPage title="Add a book" />,
+          },
+          {
+            path: "books/scan",
+            element: <ScanBookPage title="Add a book by ISBN" />,
           },
           { path: "bookcases", element: <BookcasesPage /> },
           { path: "bookcases/unassigned", element: <UnassignedPage /> },

@@ -1,26 +1,18 @@
-from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase
 
 from library.models import Book, Bookcase, Copy, Shelf
+from library.tests.base import LibraryTestMixin
 
-User = get_user_model()
 
-
-class AddBookManuallyTests(APITestCase):
+class AddBookManuallyTests(LibraryTestMixin, APITestCase):
     url = "/api/copies/"
 
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="a", email="a@test.com", password="pw12345!"
-        )
-        self.other = User.objects.create_user(
-            username="b", email="b@test.com", password="pw12345!"
-        )
-        self.bookcase = Bookcase.objects.create(owner=self.user, name="Living room")
+        super().setUp()
+        self.bookcase = Bookcase.objects.create(owner=self.owner, name="Living room")
         self.shelf = Shelf.objects.create(bookcase=self.bookcase, name="Top")
         other_case = Bookcase.objects.create(owner=self.other, name="Study")
         self.other_shelf = Shelf.objects.create(bookcase=other_case, name="Top")
-        self.client.force_authenticate(self.user)
 
     def post(self, **extra):
         data = {"title": "Dune", "author": "Frank Herbert", **extra}
@@ -31,8 +23,8 @@ class AddBookManuallyTests(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Book.objects.count(), 1)
         self.assertEqual(Copy.objects.count(), 1)
-        self.assertEqual(Book.objects.get().created_by, self.user)
-        self.assertEqual(Copy.objects.get().owner, self.user)
+        self.assertEqual(Book.objects.get().created_by, self.owner)
+        self.assertEqual(Copy.objects.get().owner, self.owner)
 
     def test_empty_title_rejected(self):
         response = self.post(title="")
@@ -83,6 +75,6 @@ class AddBookManuallyTests(APITestCase):
 
     def test_deleting_user_removes_manual_book_and_copy(self):
         self.post()
-        self.user.delete()
+        self.owner.delete()
         self.assertEqual(Book.objects.count(), 0)
         self.assertEqual(Copy.objects.count(), 0)

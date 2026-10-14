@@ -19,6 +19,15 @@ class Book(models.Model):
         related_name="created_books",
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["isbn"],
+                condition=models.Q(created_by__isnull=True),
+                name="unique_shared_book_isbn",
+            )
+        ]
+
     def __str__(self):
         return f"{self.title}"
 

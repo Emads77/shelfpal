@@ -26,7 +26,7 @@ function pluralize(count, word) {
 
 function AddBookLink({ children }) {
   return (
-    <Link to="/books/new" className="button button--primary">
+    <Link to="/books/scan" className="button button--primary">
       <Plus size={18} aria-hidden="true" />
       {children}
     </Link>
