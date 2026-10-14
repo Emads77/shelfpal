@@ -8,9 +8,9 @@ export function lookupBook(isbn) {
   return apiRequest(`/books/lookup/?isbn=${encodeURIComponent(isbn)}`);
 }
 
-export function addCopyFromBook(bookId, shelfId) {
+export function addCopyFromBook(bookId, shelfId, details = {}) {
   return apiRequest("/copies/", {
     method: "POST",
-    body: { book: bookId, shelf: shelfId },
+    body: { book: bookId, shelf: shelfId, ...details },
   });
 }

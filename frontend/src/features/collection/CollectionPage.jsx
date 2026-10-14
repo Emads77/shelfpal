@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { BookOpen, Plus, SearchX } from "lucide-react";
+import { BookOpen, ScanBarcode, SearchX } from "lucide-react";
 import { usePageTitle } from "../../shared/hooks/usePageTitle.js";
 import Button from "../../shared/ui/Button.jsx";
 import EmptyState from "../../shared/ui/EmptyState.jsx";
@@ -24,10 +24,10 @@ function pluralize(count, word) {
   return `${count} ${word}${count === 1 ? "" : "s"}`;
 }
 
-function AddBookLink({ children }) {
+function ScanBookLink({ children }) {
   return (
     <Link to="/books/scan" className="button button--primary">
-      <Plus size={18} aria-hidden="true" />
+      <ScanBarcode size={18} aria-hidden="true" />
       {children}
     </Link>
   );
@@ -111,7 +111,7 @@ export default function CollectionPage() {
         eyebrow="Your library"
         title="My collection"
         subtitle={subtitle}
-        actions={<AddBookLink>Add book</AddBookLink>}
+        actions={<ScanBookLink>Scan book</ScanBookLink>}
       />
 
       {loading && <p role="status">Loading your collection...</p>}
@@ -131,7 +131,7 @@ export default function CollectionPage() {
         <EmptyState
           icon={BookOpen}
           title="Start your collection"
-          action={<AddBookLink>Add your first book</AddBookLink>}
+          action={<ScanBookLink>Scan your first book</ScanBookLink>}
         >
           Add books by scanning a barcode or searching by title, then place them
           on your shelves.
