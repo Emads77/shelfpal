@@ -16,29 +16,7 @@
 
 .add-book__field {
   display: grid;
-  gap: var(--space-4);
-}
-
-.add-book__field label {
-  font-size: var(--text-small);
-  font-weight: var(--weight-medium);
-}
-
-.add-book__field input,
-.add-book__field select {
-  width: 100%;
-  min-height: var(--tap-target);
-  padding: var(--space-8) var(--space-12);
-  background: var(--color-canvas);
-  color: var(--color-ink);
-  border: 1px solid var(--color-border-input);
-  border-radius: var(--radius-md);
-}
-
-.add-book__field input:read-only,
-.add-book__field select:disabled {
-  background: var(--color-surface-sunk);
-  color: var(--color-ink-muted);
+  gap: var(--space-8);
 }
 
 .add-book__error {

@@ -191,7 +191,7 @@ export default function BookListPage({ shelfId = null, bookcaseId = null }) {
         >
           {unassignedView
             ? "Every book in your collection is on a shelf."
-            : "books you add to this shelf will show up here."}
+            : "Books you add to this shelf will show up here."}
         </EmptyState>
       )}
 
