@@ -77,6 +77,9 @@ class Copy(models.Model):
         Shelf, on_delete=models.SET_NULL, null=True, blank=True, related_name="copies"
     )
     is_read = models.BooleanField(default=False)
+    is_signed = models.BooleanField(default=False)
+    edition_number = models.PositiveIntegerField(null=True, blank=True)
+    edition_size = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.book.title} [{self.owner.username}]"

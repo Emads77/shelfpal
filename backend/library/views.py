@@ -114,6 +114,7 @@ class CopyViewSet(viewsets.ViewSet):
                 request.user,
                 serializer.validated_data["book"],
                 serializer.validated_data.get("shelf"),
+                details=serializer.validated_data,
             )
         else:
             serializer = ManualBookCreateSerializer(data=request.data)

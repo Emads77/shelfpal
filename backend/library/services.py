@@ -10,6 +10,7 @@ from library.models import Book, Bookcase, Copy, Shelf
 from .external import fetch_by_isbn
 
 PREVIEW_LIMIT = 8
+COPY_DETAIL_FIELDS = ("is_signed", "edition_number", "edition_size")
 
 
 def create_bookcase(owner, name):
@@ -207,6 +208,11 @@ def delete_copies(owner, copy_ids):
         return deleted
 
 
+def _copy_details(data):
+    """Picks the per-owner copy fields out of validated request data"""
+    return {name: data[name] for name in COPY_DETAIL_FIELDS if name in data}
+
+
 def add_book_manually(owner, data):
     shelf = None
     shelf_id = data.get("shelf")
@@ -222,7 +228,9 @@ def add_book_manually(owner, data):
             publisher=data.get("publisher", ""),
             cover=data.get("cover", ""),
         )
-        return Copy.objects.create(owner=owner, book=book, shelf=shelf)
+        return Copy.objects.create(
+            owner=owner, book=book, shelf=shelf, **_copy_details(data)
+        )
 
 
 def get_copy(owner, copy_id):
@@ -252,7 +260,7 @@ def get_or_fetch_book(isbn):
         return Book.objects.get(isbn=isbn, created_by__isnull=True)
 
 
-def add_book_by_book_id(owner, book_id, shelf_id=None):
+def add_book_by_book_id(owner, book_id, shelf_id=None, details=None):
     shelf = None
     if shelf_id is not None:
         shelf = get_object_or_404(Shelf, id=shelf_id, bookcase__owner=owner)
@@ -262,6 +270,8 @@ def add_book_by_book_id(owner, book_id, shelf_id=None):
     )
 
     with transaction.atomic():
-        copy = Copy.objects.create(owner=owner, book=book, shelf=shelf)
+        copy = Copy.objects.create(
+            owner=owner, book=book, shelf=shelf, **_copy_details(details or {})
+        )
 
     return Copy.objects.select_related("book", "shelf__bookcase").get(id=copy.id)
