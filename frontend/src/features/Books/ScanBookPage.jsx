@@ -112,25 +112,8 @@ export default function ScanBookPage() {
 
   return (
     <div className="add-book">
-      <h1>Add a book by ISBN</h1>
+      <h1>Add a book</h1>
 
-      <form className="scan-book__form" noValidate onSubmit={handleLookup}>
-        <div className="add-book__field">
-          <label htmlFor={`${id}-isbn`}>ISBN</label>
-          <input
-            id={`${id}-isbn`}
-            type="text"
-            inputMode="numeric"
-            maxLength={17}
-            value={isbn}
-            readOnly={looking || saving}
-            onChange={(e) => setIsbn(e.target.value)}
-          />
-        </div>
-        <Button type="submit" disabled={looking || saving}>
-          {looking ? "Looking up..." : "Look up"}
-        </Button>
-      </form>
       <Button
         type="button"
         disabled={looking || saving}
@@ -145,6 +128,24 @@ export default function ScanBookPage() {
           onError={handleCameraError}
         />
       )}
+
+      <form className="scan-book__form" noValidate onSubmit={handleLookup}>
+        <div className="add-book__field">
+          <label htmlFor={`${id}-isbn`}>Or type the ISBN</label>
+          <input
+            id={`${id}-isbn`}
+            type="text"
+            inputMode="numeric"
+            maxLength={17}
+            value={isbn}
+            readOnly={looking || saving}
+            onChange={(e) => setIsbn(e.target.value)}
+          />
+        </div>
+        <Button type="submit" disabled={looking || saving}>
+          {looking ? "Looking up..." : "Look up"}
+        </Button>
+      </form>
 
       {error && (
         <p role="alert" className="add-book__error">
@@ -173,6 +174,7 @@ export default function ScanBookPage() {
           {book.publisher && (
             <p className="scan-book__meta">{book.publisher}</p>
           )}
+
           <div className="add-book__field">
             <label htmlFor={`${id}-shelf`}>Shelf</label>
             <select
@@ -193,6 +195,7 @@ export default function ScanBookPage() {
               ))}
             </select>
           </div>
+
           <Button type="button" disabled={saving} onClick={handleConfirm}>
             {saving ? "Adding..." : "Add to my collection"}
           </Button>
