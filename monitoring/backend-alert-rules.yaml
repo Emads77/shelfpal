@@ -1,0 +1,209 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: backend
+      folder: ShelfPal
+      interval: 1m
+      rules:
+        - uid: eg16p8z43wq9sb
+          title: Failed login burst
+          condition: C
+          data:
+            - refId: A
+              queryType: instant
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: grafanacloud-logs
+              model:
+                datasource:
+                    type: loki
+                    uid: grafanacloud-logs
+                editorMode: code
+                expr: sum(count_over_time({service="backend", logger="shelfpal.request"} | json | status = 401 | path=~".*login.*" [5m]))
+                hide: false
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                queryType: instant
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 5
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: B
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                hide: false
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: B
+                settings:
+                    mode: ""
+                type: reduce
+          noDataState: OK
+          execErrState: Error
+          annotations:
+            description: Possible password guessing against /api/auth/login/. Check the dashboard filtered by status 401.
+            summary: More than 5 failed logins in 5 minutes
+          labels:
+            asserts_severity: warning
+          isPaused: false
+          notification_settings:
+            receiver: Personal-email
+        - uid: ag16s1p7b2f40e
+          title: Backend 5xx errors
+          condition: C
+          data:
+            - refId: A
+              queryType: instant
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: grafanacloud-logs
+              model:
+                datasource:
+                    type: loki
+                    uid: grafanacloud-logs
+                editorMode: code
+                expr: sum(count_over_time({service="backend", logger="shelfpal.request"} | json | status >= 500 [5m]))
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                queryType: instant
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 2
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          for: 1m
+          annotations:
+            summary: Backend returned more than 2 server errors in 5 minutes
+          labels:
+            asserts_severity: critical
+          isPaused: false
+          notification_settings:
+            receiver: Personal-email
+        - uid: bg16sbcwhr18ga
+          title: Backend latency high
+          condition: C
+          data:
+            - refId: A
+              queryType: instant
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: grafanacloud-logs
+              model:
+                datasource:
+                    type: loki
+                    uid: grafanacloud-logs
+                editorMode: code
+                expr: max(quantile_over_time(0.95, {service="backend", logger="shelfpal.request"} | json | unwrap duration_ms [5m]))
+                instant: true
+                intervalMs: 1000
+                maxDataPoints: 43200
+                queryType: instant
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1000
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          for: 1m
+          annotations:
+            summary: p95 request latency above 1 second over 5 minutes
+          labels:
+            asserts_severity: warning
+          isPaused: false
+          notification_settings:
+            receiver: Personal-email
