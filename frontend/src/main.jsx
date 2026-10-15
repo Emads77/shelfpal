@@ -12,7 +12,7 @@ initFaro();
 installGlobalErrorLogging();
 
 createRoot(document.getElementById("root"), {
-  onUnCaughtError: (error, info) =>
+  onUncaughtError: (error, info) =>
     logger.error("Uncaught render error", {
       error,
       component_stack: info.componentStack,
