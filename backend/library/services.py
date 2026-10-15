@@ -235,7 +235,9 @@ def add_book_manually(owner, data):
 
 def get_copy(owner, copy_id):
     return get_object_or_404(
-        Copy.objects.select_related("book"), id=copy_id, owner=owner
+        Copy.objects.select_related("book", "shelf__bookcase"),
+        id=copy_id,
+        owner=owner,
     )
 
 

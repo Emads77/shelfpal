@@ -5,6 +5,7 @@ import RequireAuth from "./RequireAuth.jsx";
 import LoginPage from "../features/auth/LoginPage.jsx";
 import RegisterPage from "../features/auth/RegisterPage.jsx";
 import CollectionPage from "../features/collection/CollectionPage.jsx";
+import BookDetailPage from "../features/collection/BookDetailPage.jsx";
 import BookcasesPage from "../features/bookcases/BookcasesPage.jsx";
 import ShelfPage from "../features/bookcases/ShelfPage.jsx";
 import UnassignedPage from "../features/bookcases/UnassignedPage.jsx";
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
           {
             path: "books/scan",
             element: <ScanBookPage title="Add a book by ISBN" />,
+          },
+          {
+            path: "books/:copyId",
+            element: <BookDetailPage />,
           },
           { path: "bookcases", element: <BookcasesPage /> },
           { path: "bookcases/unassigned", element: <UnassignedPage /> },

@@ -194,3 +194,7 @@ class BookSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ["id", "isbn", "title", "author", "publisher", "cover"]
+
+
+class CopyDetailSerializer(CopyReadSerializer):
+    book = BookSummarySerializer(read_only=True)
