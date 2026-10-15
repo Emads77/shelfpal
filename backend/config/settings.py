@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 
@@ -67,6 +68,7 @@ SIMPLE_JWT = {
 }
 
 MIDDLEWARE = [
+    "config.middleware.RequestLogMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -80,6 +82,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", "http://localhost:5173")
 CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
+CORS_EXPOSE_HEADERS = ["X-Request-ID"]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 ROOT_URLCONF = "config.urls"
@@ -165,3 +168,36 @@ MAILERS = {
         "BACKEND": "django.core.mail.backends.console.EmailBackend",
     },
 }
+
+# Logging
+# LOG_FORMAT=json (one JSON object per line, for Grafana when we deploy)
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+LOG_FORMAT = os.getenv("LOG_FORMAT", "plain")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "request_id": {"()": "config.log_utils.RequestIdFilter"},
+    },
+    "formatters": {
+        "json": {"()": "config.log_utils.JsonFormatter"},
+        "plain": {
+            "format": "%(asctime)s %(levelname)s %(name)s [%(request_id)s] %(message)s",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "filters": ["request_id"],
+            "formatter": LOG_FORMAT if LOG_FORMAT in ("json", "plain") else "plain",
+        },
+    },
+    "root": {"handlers": ["console"], "level": LOG_LEVEL},
+}
+
+# Makes tests not print into the test output
+if "test" in sys.argv:
+    LOGGING["handlers"]["console"]["class"] = "logging.NullHandler"
+    LOGGING["handlers"]["console"].pop("filters", None)
+    LOGGING["handlers"]["console"].pop("formatter", None)
