@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { flushSync } from "react-dom";
 import { Link, useNavigate } from "react-router";
 import Button from "../../shared/ui/Button.jsx";
 import FoldSection from "../../shared/ui/FoldSection.jsx";
 import FormError from "../../shared/ui/FormError.jsx";
 import FormField from "../../shared/ui/FormField.jsx";
-import { getLibraryOverview } from "../bookcases/api.js";
 import { errorMessage } from "../bookcases/errorMessage.js";
+import ShelfPicker from "../bookcases/ShelfPicker.jsx";
+import { rememberShelf, useShelfPicker } from "../bookcases/useShelfPicker.js";
 import { addCopyFromBook, lookupBook } from "./api.js";
 import BarcodeScanner from "./BarcodeScanner.jsx";
 import CopyDetailsSection from "./CopyDetailsSection.jsx";
@@ -53,26 +54,9 @@ export default function ScanBookPage() {
   const [error, setError] = useState("");
   const [saveError, setSaveError] = useState("");
   const [errors, setErrors] = useState({});
-  const [bookcases, setBookcases] = useState([]);
-  const [shelf, setShelf] = useState("");
   const [details, setDetails] = useState(EMPTY_DETAILS);
   const [scanning, setScanning] = useState(false);
-
-  useEffect(() => {
-    getLibraryOverview()
-      .then((overview) => setBookcases(overview.bookcases))
-      .catch((err) => setError(errorMessage(err)));
-  }, []);
-
-  function pathFor(shelfId) {
-    if (shelfId === null) return "/bookcases/unassigned";
-    const bookcase = bookcases.find((b) =>
-      b.shelves.some((s) => s.id === shelfId),
-    );
-    return bookcase
-      ? `/bookcases/${bookcase.id}/shelves/${shelfId}`
-      : "/bookcases";
-  }
+  const picker = useShelfPicker();
 
   function clearError(name) {
     setErrors((current) => {
@@ -81,12 +65,6 @@ export default function ScanBookPage() {
       delete next[name];
       return next;
     });
-  }
-
-  function updateShelf(value) {
-    setShelf(value);
-    clearError("shelf");
-    setSaveError("");
   }
 
   function updateDetails(next) {
@@ -179,13 +157,15 @@ export default function ScanBookPage() {
     setSaving(true);
     setError("");
     try {
-      const shelfId = shelf === "" ? null : Number(shelf);
+      const shelfId = picker.shelf === "" ? null : Number(picker.shelf);
       const copy = await addCopyFromBook(
         book.id,
         shelfId,
         detailsPayload(details),
       );
-      navigate(pathFor(copy.shelf));
+      console.log(copy.shelf);
+      rememberShelf(copy.shelf);
+      navigate(picker.pathFor(copy.shelf));
     } catch (err) {
       const { fields, rest } = splitServerErrors(err, FIELD_ORDER);
       showErrors(fields, formElement, rest);
@@ -198,7 +178,6 @@ export default function ScanBookPage() {
     <div className="add-book">
       <h1>Scan a book</h1>
 
-      {/* Forced open while the camera runs because the scanner needs a visible box */}
       <FoldSection title="Find your book" hasErrors={scanning}>
         <Button
           type="button"
@@ -283,36 +262,12 @@ export default function ScanBookPage() {
             hint="Only you can see this"
             hasErrors={copyHasErrors}
           >
-            <div className="add-book__field">
-              <label htmlFor="shelf">Shelf</label>
-              <select
-                id="shelf"
-                name="shelf"
-                value={shelf}
-                disabled={saving}
-                aria-invalid={Boolean(errors.shelf?.length)}
-                aria-describedby={
-                  errors.shelf?.length ? "shelf-error" : undefined
-                }
-                onChange={(e) => updateShelf(e.target.value)}
-              >
-                <option value="">No shelf (unassigned)</option>
-                {bookcases.map((bookcase) => (
-                  <optgroup key={bookcase.id} label={bookcase.name}>
-                    {bookcase.shelves.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
-              {errors.shelf?.length > 0 && (
-                <p id="shelf-error" className="field-error">
-                  {errors.shelf.join(" ")}
-                </p>
-              )}
-            </div>
+            <ShelfPicker
+              picker={picker}
+              disabled={saving}
+              errors={errors.shelf}
+              onChange={() => clearError("shelf")}
+            />
 
             <CopyDetailsSection
               value={details}
@@ -322,7 +277,7 @@ export default function ScanBookPage() {
             />
           </FoldSection>
 
-          <FormError>{saveError}</FormError>
+          <FormError>{saveError || picker.loadError}</FormError>
 
           <Button type="submit" disabled={saving}>
             {saving ? "Adding..." : "Add to my collection"}

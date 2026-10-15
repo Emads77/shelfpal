@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { flushSync } from "react-dom";
 import { useNavigate } from "react-router";
 import Button from "../../shared/ui/Button.jsx";
 import FoldSection from "../../shared/ui/FoldSection.jsx";
 import FormError from "../../shared/ui/FormError.jsx";
 import FormField from "../../shared/ui/FormField.jsx";
-import { getLibraryOverview } from "../bookcases/api.js";
-import { errorMessage } from "../bookcases/errorMessage.js";
+import { rememberShelf, useShelfPicker } from "../bookcases/useShelfPicker.js";
 import { addBookManually } from "./api.js";
 import CopyDetailsSection from "./CopyDetailsSection.jsx";
 import {
@@ -16,6 +15,7 @@ import {
 } from "./copyDetails.js";
 import { splitServerErrors } from "./serverErrors.js";
 import "./books.css";
+import ShelfPicker from "../bookcases/ShelfPicker.jsx";
 
 const EMPTY_FORM = {
   title: "",
@@ -23,7 +23,6 @@ const EMPTY_FORM = {
   isbn: "",
   publisher: "",
   cover: "",
-  shelf: "",
 };
 
 //Order in which the first invalid field receives focus
@@ -49,16 +48,10 @@ export default function AddBookPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState(EMPTY_FORM);
   const [details, setDetails] = useState(EMPTY_DETAILS);
-  const [bookcases, setBookcases] = useState([]);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState("");
-
-  useEffect(() => {
-    getLibraryOverview()
-      .then((overview) => setBookcases(overview.bookcases))
-      .catch((err) => setFormError(errorMessage(err)));
-  }, []);
+  const picker = useShelfPicker();
 
   function clearError(name) {
     setErrors((current) => {
@@ -92,16 +85,6 @@ export default function AddBookPage() {
     if (first) formElement.elements.namedItem(first)?.focus();
   }
 
-  function pathFor(shelfId) {
-    if (shelfId === null) return "/bookcases/unassigned";
-    const bookcase = bookcases.find((b) =>
-      b.shelves.some((s) => s.id === shelfId),
-    );
-    return bookcase
-      ? `/bookcases/${bookcase.id}/shelves/${shelfId}`
-      : "/bookcases";
-  }
-
   async function handleSubmit(event) {
     event.preventDefault();
     const formElement = event.currentTarget;
@@ -121,10 +104,12 @@ export default function AddBookPage() {
         isbn: form.isbn.trim(),
         publisher: form.publisher.trim(),
         cover: form.cover.trim(),
-        shelf: form.shelf === "" ? null : Number(form.shelf),
+        shelf: picker.shelf === "" ? null : Number(picker.shelf),
         ...detailsPayload(details),
       });
-      navigate(pathFor(copy.shelf));
+      console.log(copy.shelf);
+      rememberShelf(copy.shelf);
+      navigate(picker.pathFor(copy.shelf));
     } catch (err) {
       const { fields, rest } = splitServerErrors(err, FIELD_ORDER);
       showErrors(fields, formElement, rest);
@@ -195,34 +180,12 @@ export default function AddBookPage() {
         hint="Only you can see this"
         hasErrors={copyHasErrors}
       >
-        <div className="add-book__field">
-          <label htmlFor="shelf">Shelf</label>
-          <select
-            id="shelf"
-            name="shelf"
-            value={form.shelf}
-            disabled={saving}
-            aria-invalid={Boolean(errors.shelf?.length)}
-            aria-describedby={errors.shelf?.length ? "shelf-error" : undefined}
-            onChange={(e) => update("shelf", e.target.value)}
-          >
-            <option value="">No shelf (unassigned)</option>
-            {bookcases.map((bookcase) => (
-              <optgroup key={bookcase.id} label={bookcase.name}>
-                {bookcase.shelves.map((shelf) => (
-                  <option key={shelf.id} value={shelf.id}>
-                    {shelf.name}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-          {errors.shelf?.length > 0 && (
-            <p id="shelf-error" className="field-error">
-              {errors.shelf.join(" ")}
-            </p>
-          )}
-        </div>
+        <ShelfPicker
+          picker={picker}
+          disabled={saving}
+          errors={errors.shelf}
+          onChange={() => clearError("shelf")}
+        />
 
         <CopyDetailsSection
           value={details}
@@ -232,7 +195,7 @@ export default function AddBookPage() {
         />
       </FoldSection>
 
-      <FormError>{formError}</FormError>
+      <FormError>{formError || picker.loadError}</FormError>
 
       <Button type="submit" disabled={saving}>
         {saving ? "Saving..." : "Add book"}
