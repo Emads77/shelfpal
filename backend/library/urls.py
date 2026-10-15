@@ -3,6 +3,7 @@ from rest_framework_nested import routers
 
 from library.views import (
     BookcaseViewSet,
+    BookLookupView,
     CopyViewSet,
     LibraryOverviewView,
     ShelfViewSet,
@@ -18,6 +19,7 @@ bookcase_router.register("shelves", ShelfViewSet, basename="shelf")
 
 urlpatterns = [
     path("overview/", LibraryOverviewView.as_view(), name="library-overview"),
+    path("books/lookup/", BookLookupView.as_view()),
     *router.urls,
     *bookcase_router.urls,
 ]

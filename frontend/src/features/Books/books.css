@@ -55,3 +55,44 @@
     padding: var(--space-32);
   }
 }
+.scan-book__form {
+  display: grid;
+  gap: var(--space-16);
+}
+
+.scan-book__preview {
+  display: grid;
+  gap: var(--space-8);
+  justify-items: start;
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--color-border);
+}
+
+.scan-book__cover {
+  width: 100%;
+  max-width: 10rem;
+  height: auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.scan-book__title {
+  margin: 0;
+}
+
+.scan-book__meta {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+}
+
+.scan-book__alt {
+  margin: 0;
+  font-size: var(--text-small);
+}
+
+.scan-book__camera {
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}

@@ -1,11 +1,13 @@
 from collections import defaultdict
 
 from django.db import IntegrityError, transaction
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from rest_framework import exceptions
 
 from library.models import Book, Bookcase, Copy, Shelf
+
+from .external import fetch_by_isbn
 
 PREVIEW_LIMIT = 8
 
@@ -227,3 +229,39 @@ def get_copy(owner, copy_id):
     return get_object_or_404(
         Copy.objects.select_related("book"), id=copy_id, owner=owner
     )
+
+
+def get_or_fetch_book(isbn):
+    book = Book.objects.filter(isbn=isbn, created_by__isnull=True).first()
+    if book:
+        return book
+
+    data = fetch_by_isbn(isbn)
+    if data is None:
+        return None
+    try:
+        with transaction.atomic():
+            return Book.objects.create(
+                isbn=isbn,
+                title=data["title"],
+                author=data["author"],
+                publisher=data["publisher"],
+                cover=data["cover"],
+            )
+    except IntegrityError:
+        return Book.objects.get(isbn=isbn, created_by__isnull=True)
+
+
+def add_book_by_book_id(owner, book_id, shelf_id=None):
+    shelf = None
+    if shelf_id is not None:
+        shelf = get_object_or_404(Shelf, id=shelf_id, bookcase__owner=owner)
+
+    book = get_object_or_404(
+        Book, Q(created_by__isnull=True) | Q(created_by=owner), id=book_id
+    )
+
+    with transaction.atomic():
+        copy = Copy.objects.create(owner=owner, book=book, shelf=shelf)
+
+    return Copy.objects.select_related("book", "shelf__bookcase").get(id=copy.id)

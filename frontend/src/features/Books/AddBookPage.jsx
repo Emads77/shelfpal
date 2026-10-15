@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import Button from "../../shared/ui/Button.jsx";
 import { getLibraryOverview } from "../bookcases/api.js";
 import { errorMessage } from "../bookcases/errorMessage.js";
-import { addBookManually } from "../bookcases/api.js";
+import { addBookManually } from "./api.js";
 import "./books.css";
 
 const EMPTY_FORM = {

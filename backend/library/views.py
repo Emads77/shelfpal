@@ -5,13 +5,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from library import services
+from library.external import ExternalLookupError
 from library.serializers import (
     BookcaseSerializer,
+    BookSummarySerializer,
+    CopyFromBookCreateSerializer,
     CopyIdsSerializer,
     CopyListQuerySerializer,
     CopyMoveSerializer,
     CopyReadSerializer,
     CopyUpdateSerializer,
+    ISBNLookupSerializer,
     LibraryOverviewSerializer,
     ManualBookCreateSerializer,
     ShelfBulkCreateSerializer,
@@ -103,9 +107,18 @@ class CopyViewSet(viewsets.ViewSet):
         return Response(CopyReadSerializer(copies, many=True).data)
 
     def create(self, request):
-        serializer = ManualBookCreateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        copy = services.add_book_manually(request.user, serializer.validated_data)
+        if "book" in request.data:
+            serializer = CopyFromBookCreateSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            copy = services.add_book_by_book_id(
+                request.user,
+                serializer.validated_data["book"],
+                serializer.validated_data.get("shelf"),
+            )
+        else:
+            serializer = ManualBookCreateSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            copy = services.add_book_manually(request.user, serializer.validated_data)
         return Response(CopyReadSerializer(copy).data, status=201)
 
     def retrieve(self, request, pk=None):
@@ -137,3 +150,20 @@ class CopyViewSet(viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         count = services.delete_copies(request.user, serializer.validated_data["ids"])
         return Response({"count": count})
+
+
+class BookLookupView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = ISBNLookupSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        try:
+            book = services.get_or_fetch_book(serializer.validated_data["isbn"])
+        except ExternalLookupError:
+            return Response(
+                {"detail": "Book lookup is unavailable right now."}, status=503
+            )
+        if book is None:
+            return Response({"detail": "No book found for this ISBN."}, status=404)
+        return Response(BookSummarySerializer(book).data)
