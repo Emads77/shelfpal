@@ -4,8 +4,9 @@ import {
   getRefreshToken,
   setTokens,
 } from "./tokenStorage.js";
+import { logger } from "../shared/logger.js";
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api";
+const BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
 
 export class ApiError extends Error {
   constructor(status, data, message) {
@@ -24,6 +25,13 @@ export function onSessionExpired(handler) {
   };
 }
 
+function levelFor(status) {
+  if (status >= 500) return "error";
+  if (status === 400 || status === 401) return "debug";
+  if (status >= 400) return "warn";
+  return "debug";
+}
+
 async function send(path, { method = "GET", body, auth = true } = {}) {
   const headers = {
     "Content-Type": "application/json",
@@ -32,6 +40,7 @@ async function send(path, { method = "GET", body, auth = true } = {}) {
   const token = getAccessToken();
   if (auth && token) headers.Authorization = `Bearer ${token}`;
 
+  const started = performance.now();
   let response;
   try {
     response = await fetch(`${BASE_URL}${path}`, {
@@ -39,7 +48,13 @@ async function send(path, { method = "GET", body, auth = true } = {}) {
       headers,
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
-  } catch {
+  } catch (error) {
+    logger.error("Network request failed", {
+      method,
+      path,
+      error,
+      duration_ms: Math.round(performance.now() - started),
+    });
     throw new ApiError(
       0,
       null,
@@ -48,6 +63,16 @@ async function send(path, { method = "GET", body, auth = true } = {}) {
   }
 
   const data = await parseJson(response);
+  logger[levelFor(response.status)](
+    response.ok ? "API request" : "API request failed",
+    {
+      method,
+      path,
+      status: response.status,
+      duration_ms: Math.round(performance.now() - started),
+      request_id: response.headers.get("X-Request-ID"),
+    },
+  );
   return { response, data };
 }
 
@@ -84,6 +109,7 @@ export async function apiRequest(path, options = {}) {
       await refreshAccessToken();
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
+        logger.info("Session expired");
         sessionExpiredHandler();
         throw new ApiError(401, data, "Session expired");
       }
