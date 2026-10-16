@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Link,
   Navigate,
@@ -6,11 +6,27 @@ import {
   useNavigate,
   useParams,
 } from "react-router";
-import { ArrowLeft, Hash, PenLine } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRightLeft,
+  Hash,
+  PenLine,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { usePageTitle } from "../../shared/hooks/usePageTitle.js";
+import ActionsMenu from "../../shared/ui/ActionsMenu.jsx";
 import Badge from "../../shared/ui/Badge.jsx";
 import Button from "../../shared/ui/Button.jsx";
-import { getCopy } from "../bookcases/api.js";
+import ConfirmDialog from "../../shared/ui/ConfirmDialog.jsx";
+import {
+  deleteCopies,
+  getLibraryOverview,
+  moveCopies,
+} from "../bookcases/api.js";
+import { errorMessage } from "../bookcases/errorMessage.js";
+import MoveCopiesDialog from "../bookcases/MoveCopiesDialog.jsx";
+import { useCopy } from "../bookcases/useCopy.js";
 import BookCover from "./BookCover.jsx";
 import { placeOf } from "./placeOf.js";
 import { STATUS_META, statusOf } from "./statusMeta.js";
@@ -51,34 +67,68 @@ function Fact({ label, children }) {
 }
 
 function BookDetail({ copyId }) {
-  const [copy, setCopy] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(null);
-  const [attempt, setAttempt] = useState(0);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { copy, loading, loadError, retry, reload } = useCopy(copyId);
+  const [moveTargets, setMoveTargets] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [menuError, setMenuError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const menuRef = useRef(null);
 
   usePageTitle(copy?.book.title ?? "Book");
 
-  useEffect(() => {
-    let cancelled = false;
-    getCopy(copyId)
-      .then((data) => {
-        if (!cancelled) setCopy(data);
-      })
-      .catch((err) => {
-        if (!cancelled) setLoadError(err);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [copyId, attempt]);
+  function leave() {
+    if (location.key !== "default") {
+      navigate(-1);
+    } else {
+      navigate("/", { replace: true });
+    }
+  }
 
-  function retry() {
-    setLoadError(null);
-    setLoading(true);
-    setAttempt((n) => n + 1);
+  async function askMove() {
+    setMenuError("");
+    try {
+      const overview = await getLibraryOverview();
+      setMoveTargets(overview.bookcases);
+    } catch (err) {
+      setMenuError(errorMessage(err));
+    }
+  }
+
+  function closeMove() {
+    setMoveTargets(null);
+    menuRef.current?.focus();
+  }
+
+  async function handleMove(targetShelfId) {
+    await moveCopies([copy.id], targetShelfId);
+    await reload();
+    closeMove();
+  }
+
+  function askDelete() {
+    setDeleteError("");
+    setDeleting(true);
+  }
+
+  function closeDelete() {
+    setDeleting(false);
+    setDeleteError("");
+    menuRef.current?.focus();
+  }
+
+  async function handleDelete() {
+    setBusy(true);
+    setDeleteError("");
+    try {
+      await deleteCopies([copy.id]);
+      leave();
+    } catch (err) {
+      setDeleteError(errorMessage(err));
+      setBusy(false);
+    }
   }
 
   if (loading) return <p role="status">Loading book...</p>;
@@ -114,9 +164,44 @@ function BookDetail({ copyId }) {
     ? `Numbered ${copy.edition_number} / ${copy.edition_size}`
     : `Numbered ${copy.edition_number}`;
 
+  const menuItems = [
+    {
+      key: "edit",
+      label: "Edit",
+      icon: Pencil,
+      onSelect: () => navigate(`/books/${copy.id}/edit`),
+    },
+    {
+      key: "move",
+      label: "Move to...",
+      icon: ArrowRightLeft,
+      onSelect: askMove,
+    },
+    {
+      key: "delete",
+      label: "Delete",
+      icon: Trash2,
+      danger: true,
+      onSelect: askDelete,
+    },
+  ];
+
   return (
     <article className="book-detail">
-      <BackLink />
+      <div className="book-detail__topbar">
+        <BackLink />
+        <ActionsMenu
+          label={`Actions for ${book.title}`}
+          items={menuItems}
+          triggerRef={menuRef}
+        />
+      </div>
+
+      {menuError && (
+        <p role="alert" className="form-error">
+          {menuError}
+        </p>
+      )}
 
       <div className="book-detail__layout">
         <div className="book-detail__cover">
@@ -154,6 +239,28 @@ function BookDetail({ copyId }) {
           </dl>
         </div>
       </div>
+
+      {moveTargets && (
+        <MoveCopiesDialog
+          count={1}
+          bookcases={moveTargets}
+          currentShelfId={copy.shelf}
+          onMove={handleMove}
+          onCancel={closeMove}
+        />
+      )}
+
+      <ConfirmDialog
+        open={deleting}
+        title={`Delete “${book.title}”?`}
+        confirmLabel="Delete book"
+        busy={busy}
+        error={deleteError}
+        onConfirm={handleDelete}
+        onCancel={closeDelete}
+      >
+        It will be removed from your collection.
+      </ConfirmDialog>
     </article>
   );
 }

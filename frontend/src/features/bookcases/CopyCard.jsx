@@ -1,9 +1,10 @@
 import { useId } from "react";
 import { Link } from "react-router";
-import { ArrowRightLeft, Check, Circle, Trash2 } from "lucide-react";
+import { ArrowRightLeft, Trash2 } from "lucide-react";
 import ActionsMenu from "../../shared/ui/ActionsMenu.jsx";
 import Badge from "../../shared/ui/Badge.jsx";
 import BookCover from "../collection/BookCover.jsx";
+import { STATUS_META, statusOf } from "../collection/statusMeta";
 import "./copies.css";
 
 export default function CopyCard({
@@ -14,7 +15,8 @@ export default function CopyCard({
   onMove,
   onDelete,
 }) {
-  const { book, is_read } = copy;
+  const { book } = copy;
+  const status = STATUS_META[statusOf(copy)];
   const checkId = useId();
 
   return (
@@ -30,11 +32,8 @@ export default function CopyCard({
         </h2>
         <p className="copy-card__author">{book.author}</p>
         <div className="copy-card__meta">
-          <Badge
-            variant={is_read ? "soft" : "outline"}
-            icon={is_read ? Check : Circle}
-          >
-            {is_read ? "Read" : "Unread"}
+          <Badge variant={status.variant} icon={status.icon}>
+            {status.label}
           </Badge>
         </div>
       </div>

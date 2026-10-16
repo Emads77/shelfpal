@@ -110,3 +110,9 @@
     top: var(--space-24);
   }
 }
+
+.book-detail__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
