@@ -19,6 +19,14 @@ class Book(models.Model):
         related_name="created_books",
     )
 
+    copied_from = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="personal_versions",
+    )
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
@@ -69,6 +77,11 @@ class Shelf(models.Model):
 
 
 class Copy(models.Model):
+    class Status(models.TextChoices):
+        UNREAD = "unread", "Unread"
+        READING = "reading", "Reading"
+        FINISHED = "finished", "Finished"
+
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="copies"
     )
@@ -76,7 +89,9 @@ class Copy(models.Model):
     shelf = models.ForeignKey(
         Shelf, on_delete=models.SET_NULL, null=True, blank=True, related_name="copies"
     )
-    is_read = models.BooleanField(default=False)
+    status = models.CharField(
+        max_length=10, choices=Status.choices, default=Status.UNREAD
+    )
     is_signed = models.BooleanField(default=False)
     edition_number = models.PositiveIntegerField(null=True, blank=True)
     edition_size = models.PositiveIntegerField(null=True, blank=True)
