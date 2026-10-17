@@ -107,7 +107,6 @@ export default function AddBookPage() {
         shelf: picker.shelf === "" ? null : Number(picker.shelf),
         ...detailsPayload(details),
       });
-      console.log(copy.shelf);
       rememberShelf(copy.shelf);
       navigate(picker.pathFor(copy.shelf));
     } catch (err) {
