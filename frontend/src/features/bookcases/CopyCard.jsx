@@ -4,6 +4,7 @@ import { ArrowRightLeft, Trash2 } from "lucide-react";
 import ActionsMenu from "../../shared/ui/ActionsMenu.jsx";
 import Badge from "../../shared/ui/Badge.jsx";
 import BookCover from "../collection/BookCover.jsx";
+import StatusMenu from "../collection/StatusMenu.jsx";
 import { STATUS_META, statusOf } from "../collection/statusMeta";
 import "./copies.css";
 
@@ -14,9 +15,11 @@ export default function CopyCard({
   onToggle,
   onMove,
   onDelete,
+  onStatusChange,
 }) {
   const { book } = copy;
-  const status = STATUS_META[statusOf(copy)];
+  const statusKey = statusOf(copy);
+  const status = STATUS_META[statusKey];
   const checkId = useId();
 
   return (
@@ -32,9 +35,17 @@ export default function CopyCard({
         </h2>
         <p className="copy-card__author">{book.author}</p>
         <div className="copy-card__meta">
-          <Badge variant={status.variant} icon={status.icon}>
-            {status.label}
-          </Badge>
+          {selecting ? (
+            <Badge variant={status.variant} icon={status.icon}>
+              {status.label}
+            </Badge>
+          ) : (
+            <StatusMenu
+              status={statusKey}
+              title={book.title}
+              onChange={(next) => onStatusChange(copy, next)}
+            />
+          )}
         </div>
       </div>
       <div className="copy-card__menu">

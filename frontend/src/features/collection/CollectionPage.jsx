@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { BookOpen, ScanBarcode, SearchX } from "lucide-react";
 import { usePageTitle } from "../../shared/hooks/usePageTitle.js";
+import { useStatusChange } from "./useStatusChange.js";
 import Button from "../../shared/ui/Button.jsx";
 import EmptyState from "../../shared/ui/EmptyState.jsx";
 import FilterChips from "../../shared/ui/FilterChips.jsx";
@@ -70,6 +71,16 @@ export default function CollectionPage() {
     setQuery("");
     setStatus("all");
   }
+
+  function patchCopy(copyId, changes) {
+    setCopies((current) =>
+      current.map((copy) =>
+        copy.id === copyId ? { ...copy, ...changes } : copy,
+      ),
+    );
+  }
+
+  const { changeStatus, error: statusError } = useStatusChange(patchCopy);
 
   const visible = useMemo(
     () =>
@@ -159,6 +170,12 @@ export default function CollectionPage() {
             Showing {visible.length} of {copies.length} books
           </p>
 
+          {statusError && (
+            <p role="alert" className="form-error">
+              {statusError}
+            </p>
+          )}
+
           {visible.length === 0 ? (
             <EmptyState
               icon={SearchX}
@@ -178,7 +195,11 @@ export default function CollectionPage() {
               </h2>
               <ul className="book-grid">
                 {visible.map((copy) => (
-                  <BookCard key={copy.id} copy={copy} />
+                  <BookCard
+                    key={copy.id}
+                    copy={copy}
+                    onStatusChange={changeStatus}
+                  />
                 ))}
               </ul>
             </>

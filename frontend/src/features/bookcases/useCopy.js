@@ -34,5 +34,11 @@ export function useCopy(copyId) {
     setCopy(await getCopy(copyId));
   }
 
-  return { copy, loading, loadError, retry, reload };
+  function patchCopy(copyId, changes) {
+    setCopy((current) =>
+      current && current.id === copyId ? { ...current, ...changes } : current,
+    );
+  }
+
+  return { copy, loading, loadError, retry, reload, patchCopy };
 }

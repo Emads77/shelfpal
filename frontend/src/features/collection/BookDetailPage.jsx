@@ -15,6 +15,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { usePageTitle } from "../../shared/hooks/usePageTitle.js";
+import { useStatusChange } from "./useStatusChange.js";
 import ActionsMenu from "../../shared/ui/ActionsMenu.jsx";
 import Badge from "../../shared/ui/Badge.jsx";
 import Button from "../../shared/ui/Button.jsx";
@@ -28,8 +29,9 @@ import { errorMessage } from "../bookcases/errorMessage.js";
 import MoveCopiesDialog from "../bookcases/MoveCopiesDialog.jsx";
 import { useCopy } from "../bookcases/useCopy.js";
 import BookCover from "./BookCover.jsx";
+import StatusMenu from "./StatusMenu.jsx";
 import { placeOf } from "./placeOf.js";
-import { STATUS_META, statusOf } from "./statusMeta.js";
+import { statusOf } from "./statusMeta.js";
 import "./book-detail.css";
 
 function BackLink() {
@@ -69,7 +71,9 @@ function Fact({ label, children }) {
 function BookDetail({ copyId }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { copy, loading, loadError, retry, reload } = useCopy(copyId);
+  const { copy, loading, loadError, retry, reload, patchCopy } =
+    useCopy(copyId);
+  const { changeStatus, error: statusError } = useStatusChange(patchCopy);
   const [moveTargets, setMoveTargets] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -154,7 +158,6 @@ function BookDetail({ copyId }) {
   }
 
   const { book } = copy;
-  const meta = STATUS_META[statusOf(copy)];
   const place = placeOf(copy.location);
   const placeLabel = place.bookcase
     ? `${place.bookcase} · ${place.shelf}`
@@ -203,6 +206,12 @@ function BookDetail({ copyId }) {
         </p>
       )}
 
+      {statusError && (
+        <p role="alert" className="form-error">
+          {statusError}
+        </p>
+      )}
+
       <div className="book-detail__layout">
         <div className="book-detail__cover">
           <BookCover title={book.title} coverUrl={book.cover} />
@@ -215,9 +224,11 @@ function BookDetail({ copyId }) {
           </div>
 
           <div className="book-detail__tags">
-            <Badge variant={meta.variant} icon={meta.icon}>
-              {meta.label}
-            </Badge>
+            <StatusMenu
+              status={statusOf(copy)}
+              title={book.title}
+              onChange={(next) => changeStatus(copy, next)}
+            />
             {copy.is_signed && (
               <Badge variant="soft" icon={PenLine}>
                 Signed

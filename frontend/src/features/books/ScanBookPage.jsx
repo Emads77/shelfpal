@@ -149,7 +149,7 @@ export default function ScanBookPage() {
     const formElement = event.currentTarget;
 
     const found = validateDetails(details);
-    if ((Object.keys(found), length > 0)) {
+    if (Object.keys(found).length > 0) {
       showErrors(found, formElement);
       return;
     }
@@ -163,7 +163,6 @@ export default function ScanBookPage() {
         shelfId,
         detailsPayload(details),
       );
-      console.log(copy.shelf);
       rememberShelf(copy.shelf);
       navigate(picker.pathFor(copy.shelf));
     } catch (err) {

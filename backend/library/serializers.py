@@ -129,10 +129,10 @@ class CopyUpdateSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=Copy.Status.choices, required=False)
     is_signed = serializers.BooleanField(required=False)
     edition_number = serializers.IntegerField(
-        required=False, allow_null=True, min_value=1
+        required=False, allow_null=True, min_value=1, max_value=999999
     )
     edition_size = serializers.IntegerField(
-        required=False, allow_null=True, min_value=1
+        required=False, allow_null=True, min_value=1, max_value=999999
     )
     title = serializers.CharField(max_length=200, required=False)
     author = serializers.CharField(max_length=200, required=False)
@@ -179,10 +179,10 @@ class CopyMoveSerializer(CopyIdsSerializer):
 class CopyDetailsSerializer(serializers.Serializer):
     is_signed = serializers.BooleanField(required=False, default=False)
     edition_number = serializers.IntegerField(
-        required=False, allow_null=True, min_value=1
+        required=False, allow_null=True, min_value=1, max_value=999999
     )
     edition_size = serializers.IntegerField(
-        required=False, allow_null=True, min_value=1
+        required=False, allow_null=True, min_value=1, max_value=999999
     )
 
     def validate(self, attrs):

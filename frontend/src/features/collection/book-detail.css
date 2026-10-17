@@ -14,7 +14,7 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--color-accent);
+  color: var(--color-link);
   font: inherit;
   font-weight: var(--weight-medium);
   cursor: pointer;
