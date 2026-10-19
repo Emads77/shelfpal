@@ -1,26 +1,9 @@
 import { Link } from "react-router";
-import { Inbox, Library } from "lucide-react";
+import { placeOf } from "./placeOf.js";
 import Badge from "../../shared/ui/Badge.jsx";
 import BookCover from "./BookCover.jsx";
 import { STATUS_META, statusOf } from "./statusMeta.js";
 import "./collection.css";
-
-function placeOf(location) {
-  if (!location) {
-    return {
-      to: "/bookcases/unassigned",
-      icon: Inbox,
-      bookcase: null,
-      shelf: "Unassigned",
-    };
-  }
-  return {
-    to: `/bookcases/${location.bookcase_id}/shelves/${location.shelf_id}`,
-    icon: Library,
-    bookcase: location.bookcase_name,
-    shelf: location.shelf_name,
-  };
-}
 
 export default function BookCard({ copy }) {
   const { book } = copy;
@@ -30,16 +13,19 @@ export default function BookCard({ copy }) {
   const placeLabel = place.bookcase
     ? `${place.bookcase} · ${place.shelf}`
     : place.shelf;
+  const detailPath = `/books/${copy.id}`;
 
   return (
     <li className="card book-card">
       <BookCover title={book.title} coverUrl={book.cover} />
       <div className="book-card__body">
-        <h3 className="book-card__title">{book.title}</h3>
+        <h3 className="book-card__title">
+          <Link to={detailPath}>{book.title}</Link>
+        </h3>
         {book.series && (
           <p className="book-card__series">
             {book.series}
-            {book.seriesPosition ? ` #${book.series_position}` : ""}
+            {book.series_position ? ` #${book.series_position}` : ""}
           </p>
         )}
         <p className="book-card__author">{book.author}</p>

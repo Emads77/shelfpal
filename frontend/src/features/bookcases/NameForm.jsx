@@ -14,6 +14,7 @@ export default function NameForm({
   inputRef,
   autoFocus = false,
   stayOpen = false,
+  nested = false,
 }) {
   const [value, setValue] = useState(initialValue);
   const [saving, setSaving] = useState(false);
@@ -30,7 +31,7 @@ export default function NameForm({
   }, [autoFocus, ref]);
 
   async function handleSubmit(event) {
-    event.preventDefault();
+    event?.preventDefault();
     const trimmed = value.trim();
 
     if (!trimmed) {
@@ -61,11 +62,19 @@ export default function NameForm({
     if (event.key === "Escape" && onCancel) {
       event.preventDefault();
       onCancel();
+    } else if (nested && event.key === "Enter") {
+      event.preventDefault();
+      void handleSubmit();
     }
   }
 
+  const Wrapper = nested ? "div" : "form";
+  const wrapperProps = nested
+    ? {}
+    : { noValidate: true, onSubmit: handleSubmit };
+
   return (
-    <form className="name-form" noValidate onSubmit={handleSubmit}>
+    <Wrapper className="name-form" {...wrapperProps}>
       <div className="name-form__field">
         <label htmlFor={id} className="visually-hidden">
           {label}
@@ -95,7 +104,11 @@ export default function NameForm({
         )}
       </div>
       <div className="name-form__actions">
-        <Button type="submit" disabled={saving}>
+        <Button
+          type={nested ? "button" : "submit"}
+          disabled={saving}
+          onClick={nested ? handleSubmit : undefined}
+        >
           {saving ? "Saving..." : submitLabel}
         </Button>
         {onCancel && (
@@ -104,6 +117,6 @@ export default function NameForm({
           </Button>
         )}
       </div>
-    </form>
+    </Wrapper>
   );
 }

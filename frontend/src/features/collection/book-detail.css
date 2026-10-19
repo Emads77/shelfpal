@@ -1,0 +1,112 @@
+.book-detail {
+  display: grid;
+  gap: var(--space-24);
+  max-width: var(--content-max);
+  margin-inline: auto;
+}
+
+.book-detail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  justify-self: start;
+  min-height: var(--tap-target);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.book-detail__back:hover {
+  text-decoration: underline;
+}
+
+.book-detail__layout {
+  display: grid;
+  gap: var(--space-24);
+}
+
+.book-detail__cover {
+  width: min(100%, 18rem);
+  margin-inline: auto;
+}
+
+.book-detail__cover .book-cover {
+  width: 100%;
+  height: auto;
+}
+
+.book-detail__cover .book-cover--generated {
+  padding: var(--space-16) var(--space-16) var(--space-16) var(--space-24);
+  font-size: 1.5rem;
+}
+
+.book-detail__main {
+  display: grid;
+  gap: var(--space-16);
+  align-content: start;
+  min-width: 0;
+}
+
+.book-detail__title {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.book-detail__author {
+  margin: var(--space-4) 0 0;
+  color: var(--color-ink-muted);
+}
+
+.book-detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+
+.book-detail__facts {
+  margin: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.book-detail__fact {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: var(--space-12);
+  padding: var(--space-12) var(--space-16);
+  border-top: 1px solid var(--color-border);
+}
+
+.book-detail__fact:first-child {
+  border-top: 0;
+}
+
+.book-detail__fact dt {
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+}
+
+.book-detail__fact dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 48rem) {
+  .book-detail__layout {
+    grid-template-columns: minmax(12rem, 18rem) 1fr;
+    gap: var(--space-32);
+    align-items: start;
+  }
+
+  .book-detail__cover {
+    margin-inline: 0;
+    position: sticky;
+    top: var(--space-24);
+  }
+}
