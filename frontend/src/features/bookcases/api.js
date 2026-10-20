@@ -39,6 +39,10 @@ export function removeShelf(bookcaseId, shelfId) {
   });
 }
 
+export function getCopy(copyId) {
+  return apiRequest(`/copies/${copyId}/`);
+}
+
 export function getCopies({ shelf, unassigned } = {}) {
   const params = new URLSearchParams();
   if (shelf !== undefined) params.set("shelf", String(shelf));

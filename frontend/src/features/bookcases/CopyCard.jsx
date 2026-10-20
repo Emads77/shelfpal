@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { Link } from "react-router";
 import { ArrowRightLeft, Check, Circle, Trash2 } from "lucide-react";
 import ActionsMenu from "../../shared/ui/ActionsMenu.jsx";
 import Badge from "../../shared/ui/Badge.jsx";
@@ -20,7 +21,13 @@ export default function CopyCard({
     <li className={`card copy-card${selected ? " copy-card--selected" : ""}`}>
       <BookCover title={book.title} coverUrl={book.cover} />
       <div className="copy-card__body">
-        <h2 className="copy-card__title">{book.title}</h2>
+        <h2 className="copy-card__title">
+          {selecting ? (
+            book.title
+          ) : (
+            <Link to={`/books/${copy.id}`}>{book.title}</Link>
+          )}
+        </h2>
         <p className="copy-card__author">{book.author}</p>
         <div className="copy-card__meta">
           <Badge

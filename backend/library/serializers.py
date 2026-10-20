@@ -79,7 +79,16 @@ class CopyReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Copy
-        fields = ["id", "book", "shelf", "location", "is_read"]
+        fields = [
+            "id",
+            "book",
+            "shelf",
+            "location",
+            "is_read",
+            "is_signed",
+            "edition_number",
+            "edition_size",
+        ]
 
     def get_location(self, copy):
         shelf = copy.shelf
@@ -122,7 +131,30 @@ class CopyMoveSerializer(CopyIdsSerializer):
     shelf = serializers.IntegerField(allow_null=True, min_value=1)
 
 
-class ManualBookCreateSerializer(serializers.Serializer):
+class CopyDetailsSerializer(serializers.Serializer):
+    is_signed = serializers.BooleanField(required=False, default=False)
+    edition_number = serializers.IntegerField(
+        required=False, allow_null=True, min_value=1, max_value=999999
+    )
+    edition_size = serializers.IntegerField(
+        required=False, allow_null=True, min_value=1, max_value=999999
+    )
+
+    def validate(self, attrs):
+        number = attrs.get("edition_number")
+        size = attrs.get("edition_size")
+        if size is not None and number is None:
+            raise serializers.ValidationError(
+                {"edition_number": "Enter the number of your copy."}
+            )
+        if number is not None and size is not None and number > size:
+            raise serializers.ValidationError(
+                {"edition_number": "The number cannot be higher than the edition size."}
+            )
+        return attrs
+
+
+class ManualBookCreateSerializer(CopyDetailsSerializer):
     title = serializers.CharField(max_length=200)
     author = serializers.CharField(max_length=200)
     isbn = serializers.CharField(
@@ -153,7 +185,7 @@ class ISBNLookupSerializer(serializers.Serializer):
         return value
 
 
-class CopyFromBookCreateSerializer(serializers.Serializer):
+class CopyFromBookCreateSerializer(CopyDetailsSerializer):
     book = serializers.IntegerField()
     shelf = serializers.IntegerField(required=False, allow_null=True)
 
@@ -162,3 +194,7 @@ class BookSummarySerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = ["id", "isbn", "title", "author", "publisher", "cover"]
+
+
+class CopyDetailSerializer(CopyReadSerializer):
+    book = BookSummarySerializer(read_only=True)
