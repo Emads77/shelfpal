@@ -1,0 +1,56 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.form label {
+  margin-top: var(--space-8);
+  font-weight: var(--weight-semibold);
+}
+
+.form input {
+  min-height: var(--tap-target);
+  padding: var(--space-12);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: var(--text-body);
+}
+
+.form input[aria-invalid="true"] {
+  border-color: var(--color-danger);
+}
+
+.field-error,
+.form-error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--text-small);
+}
+
+.form .button {
+  margin-top: var(--space-16);
+}
+
+.form select {
+  width: 100%;
+  min-height: var(--tap-target);
+  padding: var(--space-12);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface);
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-body);
+}
+
+.form select[aria-invalid="true"] {
+  border-color: var(--color-danger);
+}
+
+.form select:disabled {
+  background-color: var(--color-surface-sunk);
+  color: var(--color-ink-muted);
+}

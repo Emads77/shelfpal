@@ -1,0 +1,134 @@
+.add-book {
+  display: grid;
+  gap: var(--space-16);
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding: var(--space-24);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.add-book h1 {
+  margin: 0;
+}
+
+.add-book__field {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.add-book__error {
+  margin: 0;
+  padding: var(--space-8) var(--space-12);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border-radius: var(--radius-md);
+  font-size: var(--text-small);
+}
+
+@media (min-width: 48rem) {
+  .add-book {
+    padding: var(--space-32);
+  }
+}
+
+.scan-book__title {
+  margin: 0;
+}
+
+.scan-book__meta {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+}
+
+.scan-book__alt {
+  margin: 0;
+  font-size: var(--text-small);
+}
+
+.scan-book__camera {
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+.scan-book__result {
+  display: grid;
+  gap: var(--space-16);
+}
+
+.scan-result {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+  padding: var(--space-16);
+  background: var(--color-surface-sunk);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.scan-result__cover,
+.scan-result__placeholder-cover {
+  flex-shrink: 0;
+  width: 6rem;
+  border-radius: var(--radius-sm);
+}
+
+.scan-result__cover {
+  height: auto;
+  box-shadow: var(--shadow-card);
+}
+
+.scan-result__placeholder-cover {
+  aspect-ratio: 2 / 3;
+  background: var(--color-border);
+}
+
+.scan-result__info {
+  display: grid;
+  flex: 1;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.scan-result__info .scan-book__title {
+  overflow-wrap: anywhere;
+}
+
+.scan-result__label {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+}
+
+.scan-result__line {
+  display: block;
+  height: 0.9rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-border);
+}
+
+.scan-result__line--short {
+  width: 60%;
+}
+
+.scan-result--loading .scan-result__placeholder-cover,
+.scan-result--loading .scan-result__line {
+  animation: scan-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes scan-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-result--loading .scan-result__placeholder-cover,
+  .scan-result--loading .scan-result__line {
+    animation: none;
+  }
+}
