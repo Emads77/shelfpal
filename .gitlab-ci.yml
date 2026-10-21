@@ -27,6 +27,7 @@ backend-test:
     - name: postgres:17
       alias: postgres
   variables:
+    SECRET_KEY: ci-test-only-not-secret
     POSTGRES_DB: shelfpal_test
     POSTGRES_USER: shelfpal
     POSTGRES_PASSWORD: ci_password
