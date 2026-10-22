@@ -65,7 +65,7 @@ frontend-build:
   variables:
     IMAGE: $CI_REGISTRY_IMAGE/frontend
     CONTEXT: frontend
-    BUILD_ARGS: --build-arg VITE_FARO_URL=$VITE_FARO_URL
+    BUILD_ARGS: --build-arg VITE_FARO_URL=$VITE_FARO_URL --build-arg VITE_APP_VERSION=$CI_COMMIT_SHORT_SHA
 
 .deploy:
   stage: deploy

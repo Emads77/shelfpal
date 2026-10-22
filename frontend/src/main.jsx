@@ -7,7 +7,7 @@ import { router } from "./app/router.jsx";
 import { AuthProvider } from "./state/AuthProvider.jsx";
 import { installGlobalErrorLogging, logger } from "./shared/logger.js";
 import { initFaro } from "./shared/faro.js";
-
+import UpdateBanner from "./shared/ui/UpdateBanner.jsx";
 initFaro();
 installGlobalErrorLogging();
 
@@ -26,6 +26,7 @@ createRoot(document.getElementById("root"), {
   <StrictMode>
     <AuthProvider>
       <RouterProvider router={router} />
+      <UpdateBanner />
     </AuthProvider>
   </StrictMode>,
 );
