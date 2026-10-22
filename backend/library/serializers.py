@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from library.models import Book, Bookcase, Copy, Shelf
@@ -84,6 +85,17 @@ class CopyBookSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "author", "cover"]
 
 
+class CopyLocationSerializer(serializers.Serializer):
+    bookcase_id = serializers.IntegerField()
+    bookcase_name = serializers.CharField()
+    shelf_id = serializers.IntegerField()
+    shelf_name = serializers.CharField()
+
+
+class CountResponseSerializer(serializers.Serializer):
+    count = serializers.IntegerField()
+
+
 class CopyReadSerializer(serializers.ModelSerializer):
     book = CopyBookSerializer(read_only=True)
     location = serializers.SerializerMethodField()
@@ -101,6 +113,7 @@ class CopyReadSerializer(serializers.ModelSerializer):
             "edition_size",
         ]
 
+    @extend_schema_field(CopyLocationSerializer(allow_null=True))
     def get_location(self, copy):
         shelf = copy.shelf
         if shelf is None:
