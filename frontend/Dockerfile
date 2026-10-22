@@ -3,6 +3,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+ARG VITE_FARO_URL
+ENV VITE_FARO_URL=$VITE_FARO_URL
 RUN npm run build
 
 FROM nginx:alpine

@@ -1,0 +1,33 @@
+.status-menu {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  max-width: 100%;
+}
+
+.status-menu .actions-menu__list {
+  right: auto;
+  left: 0;
+}
+
+.status-menu__trigger {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.status-menu__trigger:hover {
+  filter: brightness(0.95);
+}
+
+.status-menu__trigger:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.status-menu__trigger.badge--outline {
+  background: transparent;
+}
+
+.status-menu:has(.actions-menu__list) {
+  z-index: 5;
+}

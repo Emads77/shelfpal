@@ -49,7 +49,7 @@ class CopyApiTests(LibraryTestMixin, APITestCase):
         )
         self.assertEqual(response.data[0]["book"]["title"], "Second")
         self.assertEqual(response.data[0]["shelf"], self.top.id)
-        self.assertFalse(response.data[0]["is_read"])
+        self.assertEqual(response.data[0]["status"], "unread")
 
     def test_list_unassigned(self):
         response = self.client.get("/api/copies/?unassigned=true")
@@ -96,24 +96,24 @@ class CopyApiTests(LibraryTestMixin, APITestCase):
 
     # Updating
 
-    def test_mark_a_copy_as_read(self):
+    def test_change_a_copy_status(self):
         response = self.client.patch(
-            f"/api/copies/{self.first.id}/", {"is_read": True}, format="json"
+            f"/api/copies/{self.first.id}/", {"status": "finished"}, format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(response.data["is_read"])
+        self.assertEqual(response.data["status"], "finished")
         self.first.refresh_from_db()
-        self.assertTrue(self.first.is_read)
+        self.assertEqual(self.first.status, "finished")
 
     def test_updating_another_users_copy_returns_404(self):
         response = self.client.patch(
-            f"/api/copies/{self.foreign.id}/", {"is_read": True}, format="json"
+            f"/api/copies/{self.foreign.id}/", {"status": "finished"}, format="json"
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_update_without_is_read_is_rejected(self):
+    def test_update_with_empty_body_is_rejected(self):
         response = self.client.patch(f"/api/copies/{self.first.id}/", {}, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

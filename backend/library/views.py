@@ -128,12 +128,11 @@ class CopyViewSet(viewsets.ViewSet):
         return Response(CopyDetailSerializer(copy).data)
 
     def partial_update(self, request, pk=None):
-        serializer = CopyUpdateSerializer(data=request.data)
+        copy = services.get_copy(request.user, pk)
+        serializer = CopyUpdateSerializer(data=request.data, context={"copy": copy})
         serializer.is_valid(raise_exception=True)
-        copy = services.update_copy(
-            request.user, pk, serializer.validated_data["is_read"]
-        )
-        return Response(CopyReadSerializer(copy).data)
+        copy = services.update_copy(copy, serializer.validated_data)
+        return Response(CopyDetailSerializer(copy).data)
 
     @action(detail=False, methods=["post"], url_path="move")
     def bulk_move(self, request):

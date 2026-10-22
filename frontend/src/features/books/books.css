@@ -132,3 +132,8 @@
     animation: none;
   }
 }
+
+.edit-book__actions {
+  display: flex;
+  gap: 0.5rem;
+}

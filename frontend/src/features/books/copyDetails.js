@@ -45,3 +45,13 @@ export function detailsPayload(details) {
     edition_size: numbered && sizeText ? Number(sizeText) : null,
   };
 }
+
+export function detailsFromCopy(copy) {
+  const numbered = copy.edition_number !== null;
+  return {
+    isSigned: copy.is_signed,
+    isNumbered: numbered,
+    editionNumber: numbered ? String(copy.edition_number) : "",
+    editionSize: copy.edition_size === null ? "" : String(copy.edition_size),
+  };
+}

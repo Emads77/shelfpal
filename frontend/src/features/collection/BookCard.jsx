@@ -1,13 +1,13 @@
 import { Link } from "react-router";
 import { placeOf } from "./placeOf.js";
-import Badge from "../../shared/ui/Badge.jsx";
 import BookCover from "./BookCover.jsx";
-import { STATUS_META, statusOf } from "./statusMeta.js";
+import { statusOf } from "./statusMeta.js";
+import StatusMenu from "./StatusMenu.jsx";
 import "./collection.css";
 
-export default function BookCard({ copy }) {
+export default function BookCard({ copy, onStatusChange }) {
   const { book } = copy;
-  const meta = STATUS_META[statusOf(copy)];
+  const status = statusOf(copy);
   const place = placeOf(copy.location);
   const PlaceIcon = place.icon;
   const placeLabel = place.bookcase
@@ -35,9 +35,11 @@ export default function BookCard({ copy }) {
           </p>
         ) : null}
         <div className="book-card__meta">
-          <Badge variant={meta.variant} icon={meta.icon}>
-            {meta.label}
-          </Badge>
+          <StatusMenu
+            status={status}
+            title={book.title}
+            onChange={(next) => onStatusChange(copy, next)}
+          />
           <Link
             to={place.to}
             className="book-card__location"

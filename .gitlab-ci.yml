@@ -49,7 +49,7 @@ backend-test:
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
   script:
-    - docker build -t "$IMAGE:$CI_COMMIT_SHORT_SHA" -t "$IMAGE:$CI_COMMIT_REF_SLUG" "$CONTEXT"
+    - docker build $BUILD_ARGS -t "$IMAGE:$CI_COMMIT_SHORT_SHA" -t "$IMAGE:$CI_COMMIT_REF_SLUG" "$CONTEXT"
     - docker push "$IMAGE:$CI_COMMIT_SHORT_SHA"
     - docker push "$IMAGE:$CI_COMMIT_REF_SLUG"
   rules:
@@ -65,6 +65,7 @@ frontend-build:
   variables:
     IMAGE: $CI_REGISTRY_IMAGE/frontend
     CONTEXT: frontend
+    BUILD_ARGS: --build-arg VITE_FARO_URL=$VITE_FARO_URL
 
 .deploy:
   stage: deploy
@@ -78,6 +79,7 @@ frontend-build:
     - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes "$ENV_FILE" "root@$DEPLOY_HOST:$DEPLOY_DIR/.env"
     - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes deploy/docker-compose.server.yaml "root@$DEPLOY_HOST:$DEPLOY_DIR/docker-compose.yaml"
     - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes deploy/deploy.sh "root@$DEPLOY_HOST:$DEPLOY_DIR/deploy.sh"
+    - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes monitoring/config.alloy "root@$DEPLOY_HOST:$DEPLOY_DIR/config.alloy"
     - ssh -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes "root@$DEPLOY_HOST" "cd $DEPLOY_DIR && sh deploy.sh $CI_COMMIT_SHORT_SHA"
 
 deploy-acceptance:

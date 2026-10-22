@@ -9,11 +9,17 @@ export default function FoldSection({
   children,
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const [hadErrors, setHadErrors] = useState(hasErrors);
+
+  if (hasErrors !== hadErrors) {
+    setHadErrors(hasErrors);
+    if (hasErrors) setOpen(true);
+  }
 
   return (
     <details
       className="fold"
-      open={open || hasErrors}
+      open={open}
       onToggle={(e) => setOpen(e.currentTarget.open)}
     >
       <summary className="fold__summary">
