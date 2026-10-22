@@ -41,10 +41,14 @@ export function installGlobalErrorLogging() {
       message: event.message,
       source: event.filename,
       line: event.lineno,
+      skipFaro: true
     });
   });
 
   window.addEventListener("unhandledrejection", (event) => {
-    logger.error("Unhandled promise rejection", { error: event.reason });
+    logger.error("Unhandled promise rejection", {
+      error: event.reason,
+      skipFaro: true,
+    });
   });
 }
