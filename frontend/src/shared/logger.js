@@ -41,7 +41,7 @@ export function installGlobalErrorLogging() {
       message: event.message,
       source: event.filename,
       line: event.lineno,
-      skipFaro: true
+      skipFaro: true,
     });
   });
 
