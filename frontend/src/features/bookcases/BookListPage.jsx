@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, BookOpen, Inbox, Library } from "lucide-react";
 import { usePageTitle } from "../../shared/hooks/usePageTitle.js";
+import { useStatusChange } from "../collection/useStatusChange.js";
 import Button from "../../shared/ui/Button.jsx";
 import ConfirmDialog from "../../shared/ui/ConfirmDialog.jsx";
 import EmptyState from "../../shared/ui/EmptyState.jsx";
@@ -27,8 +28,9 @@ function describeTarget(bookcases, shelfId) {
 
 // shelfId === null shows the books that are not on a shelf.
 export default function BookListPage({ shelfId = null, bookcaseId = null }) {
-  const { overview, copies, loading, error, retry, reload } =
+  const { overview, copies, loading, error, retry, patchCopy, reload } =
     useCopiesView(shelfId);
+  const { changeStatus, error: statusError } = useStatusChange(patchCopy);
   const { selected, toggle, selectAll, clear } = useSelection();
   const [selecting, setSelecting] = useState(false);
   const [pending, setPending] = useState(null);
@@ -182,6 +184,12 @@ export default function BookListPage({ shelfId = null, bookcaseId = null }) {
         </p>
       )}
 
+      {statusError && (
+        <p role="alert" className="form-error">
+          {statusError}
+        </p>
+      )}
+
       {ready && copies.length === 0 && (
         <EmptyState
           icon={unassignedView ? Inbox : BookOpen}
@@ -223,6 +231,7 @@ export default function BookListPage({ shelfId = null, bookcaseId = null }) {
                 onToggle={() => toggle(copy.id)}
                 onMove={() => askMove([copy.id])}
                 onDelete={() => askDelete([copy])}
+                onStatusChange={changeStatus}
               />
             ))}
           </ul>

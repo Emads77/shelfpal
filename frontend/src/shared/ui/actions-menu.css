@@ -15,6 +15,7 @@
   background: var(--color-surface);
   box-shadow: var(--shadow-float);
   list-style: none;
+  scroll-margin-bottom: 8rem;
 }
 
 .actions-menu__item {
@@ -37,4 +38,14 @@
 
 .actions-menu__item--danger {
   color: var(--color-danger);
+}
+
+.actions-menu__check {
+  flex: none;
+  margin-left: auto;
+}
+
+.actions-menu__list--up {
+  top: auto;
+  bottom: calc(100% + var(--space-4));
 }

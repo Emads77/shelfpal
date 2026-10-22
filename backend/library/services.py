@@ -11,6 +11,8 @@ from .external import fetch_by_isbn
 
 PREVIEW_LIMIT = 8
 COPY_DETAIL_FIELDS = ("is_signed", "edition_number", "edition_size")
+COPY_FIELDS = ("status", *COPY_DETAIL_FIELDS)
+BOOK_FIELDS = ("title", "author", "isbn", "publisher", "cover")
 
 
 def create_bookcase(owner, name):
@@ -171,12 +173,43 @@ def list_copies(owner, shelf=None, unassigned=False):
     return copies
 
 
-def update_copy(owner, copy_id, is_read):
-    copy = get_object_or_404(
-        Copy.objects.select_related("book"), id=copy_id, owner=owner
+def _edit_book(copy, changes):
+    """Applies book edits for this copy only, cloning the book when it's not exclusively this copy's"""
+    book = copy.book
+    exclusive = (
+        book.created_by_id == copy.owner_id
+        and not book.copies.exclude(id=copy.id).exists()
     )
-    copy.is_read = is_read
-    copy.save(update_fields=["is_read"])
+
+    if exclusive:
+        for name, value in changes.items():
+            setattr(book, name, value)
+        book.save(update_fields=list(changes))
+        return
+
+    origin = book if book.created_by_id is None else book.copied_from
+    fields = {name: getattr(book, name) for name in BOOK_FIELDS} | changes
+    copy.book = Book.objects.create(
+        created_by_id=copy.owner_id, copied_from=origin, **fields
+    )
+
+
+def update_copy(copy, data):
+    changes = {
+        name: data[name]
+        for name in BOOK_FIELDS
+        if name in data and data[name] != getattr(copy.book, name)
+    }
+    copy_fields = [name for name in COPY_FIELDS if name in data]
+    for name in copy_fields:
+        setattr(copy, name, data[name])
+
+    with transaction.atomic():
+        if changes:
+            _edit_book(copy, changes)
+            copy_fields.append("book")
+        if copy_fields:
+            copy.save(update_fields=copy_fields)
     return copy
 
 

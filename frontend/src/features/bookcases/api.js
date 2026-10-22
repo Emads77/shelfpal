@@ -61,3 +61,7 @@ export function moveCopies(ids, shelfId) {
 export function deleteCopies(ids) {
   return apiRequest("/copies/delete/", { method: "POST", body: { ids } });
 }
+
+export function updateCopy(copyId, data) {
+  return apiRequest(`/copies/${copyId}/`, { method: "PATCH", body: data });
+}
