@@ -77,6 +77,7 @@ frontend-build:
   script:
     - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes "$ENV_FILE" "root@$DEPLOY_HOST:$DEPLOY_DIR/.env"
     - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes deploy/docker-compose.server.yaml "root@$DEPLOY_HOST:$DEPLOY_DIR/docker-compose.yaml"
+    - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes monitoring/config.alloy "root@$DEPLOY_HOST:$DEPLOY_DIR/config.alloy"
     - ssh -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes "root@$DEPLOY_HOST" "cd $DEPLOY_DIR && export IMAGE_TAG=$CI_COMMIT_SHORT_SHA && docker compose pull && docker compose up -d"
 
 deploy-acceptance:
