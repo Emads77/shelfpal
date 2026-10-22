@@ -1,9 +1,9 @@
-import { BookOpen, Check, Circle } from "lucide-react";
+import { BookOpen, Circle, CircleCheck } from "lucide-react";
 
 export const STATUS_META = {
   unread: { label: "Unread", icon: Circle, variant: "outline" },
   reading: { label: "Reading", icon: BookOpen, variant: "solid" },
-  finished: { label: "Finished", icon: Check, variant: "soft" },
+  finished: { label: "Finished", icon: CircleCheck, variant: "soft" },
 };
 
 export const STATUS_ORDER = ["unread", "reading", "finished"];
