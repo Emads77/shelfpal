@@ -5,6 +5,9 @@ export IMAGE_TAG="$1"
 
 docker compose pull
 docker compose run --rm backend-a python manage.py migrate --noinput
+if grep -q '^DEPLOY_ENV=acceptance$' .env; then
+  docker compose run --rm backend-a python manage.py seed
+fi
 
 docker compose up -d --no-deps --wait --wait-timeout 120 backend-a
 docker compose up -d --no-deps --wait --wait-timeout 120 backend-b
