@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
+    "drf_spectacular",
     "corsheaders",
     "library",
     "accounts",
@@ -58,6 +59,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
@@ -66,6 +68,18 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
 }
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "ShelfPal API",
+    "DESCRIPTION": "REST API of ShelfPal, an app for logging a personal book collection.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SERVE_AUTHENTICATION": ["rest_framework.authentication.SessionAuthentication"],
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
+}
+
+API_DOCS_ENABLED = os.getenv("API_DOCS_ENABLED", "False") == "True"
 
 MIDDLEWARE = [
     "config.middleware.RequestLogMiddleware",

@@ -1,0 +1,1205 @@
+openapi: 3.0.3
+info:
+  title: ShelfPal API
+  version: 1.0.0
+  description: REST API of ShelfPal, an app for logging a personal book collection.
+paths:
+  /api/auth/login/:
+    post:
+      operationId: auth_login_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/auth/logout/:
+    post:
+      operationId: auth_logout_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LogoutInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LogoutInputRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/auth/me/:
+    get:
+      operationId: auth_me_retrieve
+      tags:
+      - auth
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOutput'
+          description: ''
+  /api/auth/refresh/:
+    post:
+      operationId: auth_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/auth/register/:
+    post:
+      operationId: auth_register_create
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterInputRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterInputRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterInputRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOutput'
+          description: ''
+  /api/bookcases/:
+    get:
+      operationId: bookcases_list
+      tags:
+      - bookcases
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Bookcase'
+          description: ''
+    post:
+      operationId: bookcases_create
+      tags:
+      - bookcases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookcaseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookcaseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookcaseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookcase'
+          description: ''
+  /api/bookcases/{bookcase_pk}/shelves/:
+    get:
+      operationId: bookcases_shelves_list
+      parameters:
+      - in: path
+        name: bookcase_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - bookcases
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shelf'
+          description: ''
+    post:
+      operationId: bookcases_shelves_create
+      parameters:
+      - in: path
+        name: bookcase_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - bookcases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShelfRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShelfRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShelfRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shelf'
+          description: ''
+  /api/bookcases/{bookcase_pk}/shelves/{id}/:
+    get:
+      operationId: bookcases_shelves_retrieve
+      parameters:
+      - in: path
+        name: bookcase_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - bookcases
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shelf'
+          description: ''
+    put:
+      operationId: bookcases_shelves_update
+      parameters:
+      - in: path
+        name: bookcase_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - bookcases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShelfRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShelfRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShelfRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shelf'
+          description: ''
+    patch:
+      operationId: bookcases_shelves_partial_update
+      parameters:
+      - in: path
+        name: bookcase_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - bookcases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedShelfRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedShelfRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedShelfRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Shelf'
+          description: ''
+    delete:
+      operationId: bookcases_shelves_destroy
+      parameters:
+      - in: path
+        name: bookcase_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - bookcases
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/bookcases/{bookcase_pk}/shelves/bulk/:
+    post:
+      operationId: bookcases_shelves_bulk_create
+      parameters:
+      - in: path
+        name: bookcase_pk
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - bookcases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShelfBulkCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ShelfBulkCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ShelfBulkCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Shelf'
+          description: ''
+  /api/bookcases/{id}/:
+    get:
+      operationId: bookcases_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - bookcases
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookcase'
+          description: ''
+    put:
+      operationId: bookcases_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - bookcases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookcaseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BookcaseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BookcaseRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookcase'
+          description: ''
+    patch:
+      operationId: bookcases_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - bookcases
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBookcaseRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBookcaseRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBookcaseRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookcase'
+          description: ''
+    delete:
+      operationId: bookcases_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - bookcases
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/books/lookup/:
+    get:
+      operationId: books_lookup_retrieve
+      parameters:
+      - in: query
+        name: isbn
+        schema:
+          type: string
+          minLength: 1
+        required: true
+      tags:
+      - books
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookSummary'
+          description: ''
+        '404':
+          description: No book found for this ISBN.
+        '503':
+          description: The external lookup is unavailable.
+  /api/copies/:
+    get:
+      operationId: copies_list
+      parameters:
+      - in: query
+        name: shelf
+        schema:
+          type: integer
+          minimum: 1
+      - in: query
+        name: unassigned
+        schema:
+          type: boolean
+          default: false
+      tags:
+      - copies
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CopyRead'
+          description: ''
+    post:
+      operationId: copies_create
+      tags:
+      - copies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CopyCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CopyCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CopyCreateRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CopyRead'
+          description: ''
+  /api/copies/{id}/:
+    get:
+      operationId: copies_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - copies
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CopyDetail'
+          description: ''
+    patch:
+      operationId: copies_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          pattern: ^\d+$
+        required: true
+      tags:
+      - copies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCopyUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCopyUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCopyUpdateRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CopyDetail'
+          description: ''
+  /api/copies/delete/:
+    post:
+      operationId: copies_delete_create
+      tags:
+      - copies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CopyIdsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CopyIdsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CopyIdsRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+          description: ''
+  /api/copies/move/:
+    post:
+      operationId: copies_move_create
+      tags:
+      - copies
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CopyMoveRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CopyMoveRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CopyMoveRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountResponse'
+          description: ''
+  /api/overview/:
+    get:
+      operationId: overview_retrieve
+      tags:
+      - overview
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LibraryOverview'
+          description: ''
+components:
+  schemas:
+    BookSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        isbn:
+          type: string
+          nullable: true
+          maxLength: 13
+        title:
+          type: string
+          maxLength: 200
+        author:
+          type: string
+          maxLength: 200
+        publisher:
+          type: string
+          maxLength: 200
+        cover:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+      required:
+      - author
+      - id
+      - title
+    Bookcase:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        owner:
+          type: integer
+          readOnly: true
+      required:
+      - id
+      - name
+      - owner
+    BookcaseOverview:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        shelf_count:
+          type: integer
+        book_count:
+          type: integer
+        shelves:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShelfOverview'
+      required:
+      - book_count
+      - id
+      - name
+      - shelf_count
+      - shelves
+    BookcaseRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - name
+    CopyBook:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        author:
+          type: string
+          maxLength: 200
+        cover:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 200
+          - type: string
+            maxLength: 0
+      required:
+      - author
+      - id
+      - title
+    CopyCreateRequest:
+      oneOf:
+      - $ref: '#/components/schemas/CopyFromBookCreateRequest'
+      - $ref: '#/components/schemas/ManualBookCreateRequest'
+    CopyDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        book:
+          allOf:
+          - $ref: '#/components/schemas/BookSummary'
+          readOnly: true
+        shelf:
+          type: integer
+          nullable: true
+        location:
+          allOf:
+          - $ref: '#/components/schemas/CopyLocation'
+          nullable: true
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        is_signed:
+          type: boolean
+        edition_number:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        edition_size:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+      required:
+      - book
+      - id
+      - location
+    CopyFromBookCreateRequest:
+      type: object
+      properties:
+        is_signed:
+          type: boolean
+          default: false
+        edition_number:
+          type: integer
+          maximum: 999999
+          minimum: 1
+          nullable: true
+        edition_size:
+          type: integer
+          maximum: 999999
+          minimum: 1
+          nullable: true
+        book:
+          type: integer
+        shelf:
+          type: integer
+          nullable: true
+      required:
+      - book
+    CopyIdsRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+          maxItems: 200
+      required:
+      - ids
+    CopyLocation:
+      type: object
+      properties:
+        bookcase_id:
+          type: integer
+        bookcase_name:
+          type: string
+        shelf_id:
+          type: integer
+        shelf_name:
+          type: string
+      required:
+      - bookcase_id
+      - bookcase_name
+      - shelf_id
+      - shelf_name
+    CopyMoveRequest:
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: integer
+            minimum: 1
+          maxItems: 200
+        shelf:
+          type: integer
+          minimum: 1
+          nullable: true
+      required:
+      - ids
+      - shelf
+    CopyRead:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        book:
+          allOf:
+          - $ref: '#/components/schemas/CopyBook'
+          readOnly: true
+        shelf:
+          type: integer
+          nullable: true
+        location:
+          allOf:
+          - $ref: '#/components/schemas/CopyLocation'
+          nullable: true
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        is_signed:
+          type: boolean
+        edition_number:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        edition_size:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+      required:
+      - book
+      - id
+      - location
+    CountResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+      required:
+      - count
+    LibraryOverview:
+      type: object
+      properties:
+        bookcases:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookcaseOverview'
+        unassigned_count:
+          type: integer
+      required:
+      - bookcases
+      - unassigned_count
+    LogoutInputRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    ManualBookCreateRequest:
+      type: object
+      properties:
+        is_signed:
+          type: boolean
+          default: false
+        edition_number:
+          type: integer
+          maximum: 999999
+          minimum: 1
+          nullable: true
+        edition_size:
+          type: integer
+          maximum: 999999
+          minimum: 1
+          nullable: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        author:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isbn:
+          type: string
+          nullable: true
+          maxLength: 17
+        publisher:
+          type: string
+          maxLength: 200
+        cover:
+          oneOf:
+          - type: string
+            format: uri
+          - type: string
+            maxLength: 0
+        shelf:
+          type: integer
+          minimum: 1
+          nullable: true
+      required:
+      - author
+      - title
+    PatchedBookcaseRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+    PatchedCopyUpdateRequest:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/StatusEnum'
+        is_signed:
+          type: boolean
+        edition_number:
+          type: integer
+          maximum: 999999
+          minimum: 1
+          nullable: true
+        edition_size:
+          type: integer
+          maximum: 999999
+          minimum: 1
+          nullable: true
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        author:
+          type: string
+          minLength: 1
+          maxLength: 200
+        isbn:
+          type: string
+          nullable: true
+          maxLength: 17
+        publisher:
+          type: string
+          maxLength: 200
+        cover:
+          oneOf:
+          - type: string
+            format: uri
+          - type: string
+            maxLength: 0
+    PatchedShelfRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+    PreviewCover:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        cover:
+          type: string
+      required:
+      - cover
+      - id
+      - title
+    RegisterInputRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+      - username
+    Shelf:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        bookcase:
+          type: integer
+          readOnly: true
+      required:
+      - bookcase
+      - id
+      - name
+    ShelfBulkCreateRequest:
+      type: object
+      properties:
+        names:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 200
+          maxItems: 50
+      required:
+      - names
+    ShelfOverview:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        book_count:
+          type: integer
+        preview_covers:
+          type: array
+          items:
+            $ref: '#/components/schemas/PreviewCover'
+      required:
+      - book_count
+      - id
+      - name
+      - preview_covers
+    ShelfRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - name
+    StatusEnum:
+      enum:
+      - unread
+      - reading
+      - finished
+      type: string
+      description: |-
+        * `unread` - Unread
+        * `reading` - Reading
+        * `finished` - Finished
+    TokenObtainPair:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    UserOutput:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        email:
+          type: string
+          format: email
+          readOnly: true
+      required:
+      - email
+      - id
+      - username
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
