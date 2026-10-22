@@ -49,8 +49,9 @@ services:
       GRAFANA_LOKI_USER: ${GRAFANA_LOKI_USER}
       GRAFANA_LOKI_TOKEN: ${GRAFANA_LOKI_TOKEN}
       DEPLOY_ENV: ${DEPLOY_ENV:-local}
+      COMPOSE_PROJECT: ${COMPOSE_PROJECT_NAME}
     volumes:
-      - ./monitoring/config.alloy:/etc/alloy/config.alloy:ro
+      - ./config.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - alloy_data:/var/lib/alloy/data
     depends_on:

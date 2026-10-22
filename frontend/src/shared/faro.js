@@ -25,7 +25,8 @@ function stringifyContext(context) {
 }
 
 function faroTransport(level, message, context) {
-  const { error, ...rest } = context;
+  const { error, skipFaro, ...rest } = context;
+  if (skipFaro) return;
   const faroContext = stringifyContext({ message, ...rest });
 
   if (error instanceof Error) {
@@ -42,11 +43,18 @@ export function initFaro() {
   const url = import.meta.env.VITE_FARO_URL;
   if (!url) return;
 
+  function detectEnvironment() {
+    const host = window.location.hostname;
+    if (host === "shelfpal.saxion.college") return "production";
+    if (host.startsWith("acc.")) return "acceptance";
+    return "local";
+  }
+
   initializeFaro({
     url,
     app: {
       name: "shelfpal-frontend",
-      environment: import.meta.env.MODE,
+      environment: detectEnvironment(),
     },
     instrumentations: [
       //Disabled because our logger already forwards warnings and errors
