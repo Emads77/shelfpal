@@ -1,0 +1,7 @@
+shelfpal.saxion.college {
+	reverse_proxy 127.0.0.1:8080
+}
+
+acc.shelfpal.saxion.college {
+	reverse_proxy 127.0.0.1:8081
+}

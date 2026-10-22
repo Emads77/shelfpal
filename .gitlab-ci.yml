@@ -1,4 +1,4 @@
-stages: [lint, test]
+stages: [lint, test, build, deploy]
 
 backend-lint:
   stage: lint
@@ -27,6 +27,7 @@ backend-test:
     - name: postgres:17
       alias: postgres
   variables:
+    SECRET_KEY: ci-test-only-not-secret
     POSTGRES_DB: shelfpal_test
     POSTGRES_USER: shelfpal
     POSTGRES_PASSWORD: ci_password
@@ -37,3 +38,68 @@ backend-test:
     - pip install -r requirements.txt
   script:
     - python manage.py test
+
+.build-image:
+  stage: build
+  image: docker:27
+  services:
+    - docker:27-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+  script:
+    - docker build -t "$IMAGE:$CI_COMMIT_SHORT_SHA" -t "$IMAGE:$CI_COMMIT_REF_SLUG" "$CONTEXT"
+    - docker push "$IMAGE:$CI_COMMIT_SHORT_SHA"
+    - docker push "$IMAGE:$CI_COMMIT_REF_SLUG"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main"
+backend-build:
+  extends: .build-image
+  variables:
+    IMAGE: $CI_REGISTRY_IMAGE/backend
+    CONTEXT: backend
+
+frontend-build:
+  extends: .build-image
+  variables:
+    IMAGE: $CI_REGISTRY_IMAGE/frontend
+    CONTEXT: frontend
+
+.deploy:
+  stage: deploy
+  image: alpine:3.20
+  variables:
+    DEPLOY_HOST: 65.21.4.61
+  before_script:
+    - apk add --no-cache openssh-client
+    - chmod 600 "$SSH_PRIVATE_KEY"
+  script:
+    - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes "$ENV_FILE" "root@$DEPLOY_HOST:$DEPLOY_DIR/.env"
+    - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes deploy/docker-compose.server.yaml "root@$DEPLOY_HOST:$DEPLOY_DIR/docker-compose.yaml"
+    - ssh -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes "root@$DEPLOY_HOST" "cd $DEPLOY_DIR && export IMAGE_TAG=$CI_COMMIT_SHORT_SHA && docker compose pull && docker compose up -d"
+
+deploy-acceptance:
+  extends: .deploy
+  variables:
+    DEPLOY_DIR: /opt/shelfpal/acc
+  environment:
+    name: acceptance
+    url: https://acc.shelfpal.saxion.college
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+
+deploy-production:
+  extends: .deploy
+  variables:
+    DEPLOY_DIR: /opt/shelfpal/prod
+  environment:
+    name: production
+    url: https://shelfpal.saxion.college
+  before_script:
+    - apk add --no-cache openssh-client git
+    - chmod 600 "$SSH_PRIVATE_KEY"
+    - export CI_COMMIT_SHORT_SHA=$(git rev-parse --short=8 HEAD^2)
+    - echo "Deploying tested image $CI_COMMIT_SHORT_SHA"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
