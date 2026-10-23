@@ -39,6 +39,21 @@ backend-test:
   script:
     - python manage.py test
 
+frontend-test:
+  stage: test
+  image: node:22
+  cache:
+    key:
+      files:
+        - frontend/package-lock.json
+    paths:
+      - frontend/.npm/
+  before_script:
+    - cd frontend
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm test
+
 .build-image:
   stage: build
   image: docker:27
@@ -106,3 +121,4 @@ deploy-production:
     - echo "Deploying tested image $CI_COMMIT_SHORT_SHA"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
