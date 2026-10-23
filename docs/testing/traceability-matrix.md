@@ -30,7 +30,7 @@ Left out for now: US-07 search, US-08 suggestions, US-10 and US-11 offline. Add 
 
 ## Component tests (Vitest)
 
-10 of 21 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
+12 of 21 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
 
 | ID | Story | What it checks | File | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -44,8 +44,8 @@ Left out for now: US-07 search, US-08 suggestions, US-10 and US-11 offline. Add 
 | CT-08 | US-01 | client.js: a failed refresh clears tokens and calls the session expired handler | src/test/api/client.test.js |  | Done |
 | CT-09 | US-01 | client.js: two parallel 401s trigger only one refresh | src/test/api/client.test.js |  | Done |
 | CT-10 | US-01 | client.js: a network failure becomes ApiError with status 0 and a readable message | src/test/api/client.test.js |  | Done |
-| CT-11 | US-01 | Login form shows the server error on wrong credentials | src/test/auth/LoginPage.test.jsx |  | To do |
-| CT-12 | US-01 | Login form stores the tokens and navigates on success | src/test/auth/LoginPage.test.jsx |  | To do |
+| CT-11 | US-01 | Login form shows the server error on wrong credentials | src/test/auth/LoginPage.test.jsx |  | Done |
+| CT-12 | US-01 | Login form stores the tokens and navigates on success | src/test/auth/LoginPage.test.jsx |  | Done |
 | CT-13 | US-09 | StatusMenu shows the current status and changes it with a PATCH | src/test/books/StatusMenu.test.jsx |  | To do |
 | CT-14 | US-09 | A failed status change shows an error and keeps the old status | src/test/books/StatusMenu.test.jsx |  | To do |
 | CT-15 | US-04 | Manual add: an empty submit shows title and author errors and sends no request | src/test/books/AddBookPage.test.jsx |  | To do |
