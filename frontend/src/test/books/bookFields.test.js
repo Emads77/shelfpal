@@ -12,7 +12,7 @@ const validBook = {
   author: "Frank Herbert",
 };
 
-describe("US-XX and US-05: book field validation", () => {
+describe("US-04 and US-05: book field validation", () => {
   it("returns no errors for a book with title and author", () => {
     expect(validateBook(validBook)).toEqual({});
   });
@@ -37,7 +37,7 @@ describe("US-XX and US-05: book field validation", () => {
   });
 });
 
-describe("US-XX and US-05: payload sent to the API", () => {
+describe("US-04 and US-05: payload sent to the API", () => {
   it("trims whitespace from every field", () => {
     const payload = bookPayload({
       title: "  Dune ",

@@ -49,8 +49,39 @@ Keep POSTGRES_HOST=localhost in .env. Stop the backend container first, since bo
 
 ## Tests
 
-Backend: docker compose exec backend python manage.py test
-Frontend tests follow later.
+### Backend tests
+
+The backend uses Django's built in test runner. Tests need a running Postgres, so run them inside the backend container:
+
+    docker compose exec backend python manage.py test
+
+Run the tests of one app only, for example accounts:
+
+    docker compose exec backend python manage.py test accounts
+
+Django creates a separate test database for every run and deletes it afterwards, so your development data is never touched.
+
+In CI the backend test job runs on python:3.12 with a postgres:17 service. The database credentials in that job are throwaway values, and SECRET_KEY comes from a GitLab CI/CD variable.
+
+### Frontend tests
+
+The frontend uses Vitest with Testing Library for component tests and MSW to mock the API at the network level.
+
+Run all tests once from the frontend folder:
+
+    npm test
+
+Run in watch mode while developing:
+
+    npm run test:watch
+
+Tests live in src/test, mirroring the structure of src/features. A test for src/features/books/bookFields.js goes in src/test/books/bookFields.test.js. Every describe block starts with the user story ID it covers, for example US-05.
+
+src/test/setup.js starts the MSW server before the tests. Any API call a test does not mock makes the test fail, so add a handler with server.use for every endpoint the component calls.
+
+### In the pipeline
+
+Both test jobs run in the CI test stage on every pipeline, in parallel. A failing test in either one stops build and deploy.
 
 ## Git process
 
@@ -76,12 +107,24 @@ Both are protected, every change goes through a merge request.
 Run these before opening a merge request.
 
 Backend (from /backend, venv active):
+
+```bash
 ruff check .
+```
+
+```bash
 ruff format .
+```
 
 Frontend (from /frontend):
+
+```bash
 npx oxlint
+```
+
+```bash
 npx prettier --write .
+```
 
 Setup details and reasoning: see section 10 of the technical design.
 
