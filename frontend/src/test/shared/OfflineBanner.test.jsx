@@ -1,10 +1,8 @@
-import { act, cleanup, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { act, render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import OfflineBanner from "../../shared/ui/OfflineBanner.jsx";
 
-describe("Offline: the user sees when the library is shown from cache", () => {
-  afterEach(cleanup);
-
+describe("US-10: the user sees when the library is shown from cache", () => {
   it("shows the banner when the connection drops and hides it when it returns", () => {
     render(<OfflineBanner />);
     expect(screen.queryByRole("status")).toBeNull();
