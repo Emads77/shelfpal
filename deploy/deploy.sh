@@ -16,3 +16,4 @@ docker compose up -d --no-deps --wait --wait-timeout 120 frontend-b
 docker compose up -d --no-deps --wait --wait-timeout 120 --remove-orphans frontend-a
 
 docker compose up -d --remove-orphans --wait --wait-timeout 120
+docker compose restart alloy || true
