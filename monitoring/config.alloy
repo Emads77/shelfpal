@@ -16,6 +16,20 @@ discovery.relabel "containers" {
     target_label  = "service"
   }
 
+   rule {
+    source_labels = ["service"]
+    regex         = "(backend|frontend)-(.+)"
+    target_label  = "replica"
+    replacement   = "$2"
+  }
+
+  rule {
+    source_labels = ["service"]
+    regex         = "(backend|frontend)-.+"
+    target_label  = "service"
+    replacement   = "$1"
+  }
+
   rule {
     source_labels = ["__meta_docker_container_name"]
     regex         = "/(.*)"
