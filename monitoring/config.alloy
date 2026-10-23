@@ -63,6 +63,14 @@ loki.process "logs" {
       }
     }
   }
+
+  stage.match {
+    selector = "{service=\"frontend\"}"
+
+    stage.drop {
+      expression = "\"GET / HTTP/1\\.1\" 200 [0-9]+ \"-\" \"(Wget|Go-http-client/1\\.1)\""
+    }
+  }
 }
 
 loki.write "grafana" {
