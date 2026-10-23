@@ -30,7 +30,7 @@ Left out for now: US-07 search, US-08 suggestions, US-10 and US-11 offline. Add 
 
 ## Component tests (Vitest)
 
-14 of 21 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
+18 of 21 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
 
 | ID | Story | What it checks | File | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -48,10 +48,10 @@ Left out for now: US-07 search, US-08 suggestions, US-10 and US-11 offline. Add 
 | CT-12 | US-01 | Login form stores the tokens and navigates on success | src/test/auth/LoginPage.test.jsx |  | Done |
 | CT-13 | US-09 | Status menu shows the current reading status (unread, reading or finished), and choosing another one sends a PATCH | src/test/collection/StatusMenu.test.jsx |  | Done |
 | CT-14 | US-09 | A failed status change shows an error and restores the previous status | src/test/collection/StatusMenu.test.jsx |  | Done |
-| CT-15 | US-04 | Manual add: an empty submit shows title and author errors and sends no request | src/test/books/AddBookPage.test.jsx |  | To do |
-| CT-16 | US-04 | Manual add: a valid submit sends the trimmed payload | src/test/books/AddBookPage.test.jsx |  | To do |
-| CT-17 | US-02 | ISBN lookup fills the book fields | src/test/books/AddBookPage.test.jsx |  | To do |
-| CT-18 | US-02 | A failed lookup shows a message, and manual entry still works | src/test/books/AddBookPage.test.jsx |  | To do |
+| CT-15 | US-04 | Manual add: an empty submit shows title and author errors and sends no request | src/test/books/AddBookPage.test.jsx |  | Done |
+| CT-16 | US-04 | Manual add: a valid submit sends the trimmed payload | src/test/books/AddBookPage.test.jsx |  | Done |
+| CT-17 | US-02 | Looking up a valid ISBN shows the found book, and confirming adds it with a POST that carries the book id | src/test/books/ScanBookPage.test.jsx |  | Done |
+| CT-18 | US-02 | A failed lookup (not found, or lookup unavailable) shows a message, with a link to enter the book by hand | src/test/books/ScanBookPage.test.jsx |  | Done |
 | CT-19 | US-05 | Edit page loads the copy into the form | src/test/books/EditBookPage.test.jsx |  | To do |
 | CT-20 | US-05 | Saving the edit form sends a PATCH and shows the updated book | src/test/books/EditBookPage.test.jsx |  | To do |
 | CT-21 | US-06 | Delete asks for confirmation, and cancel keeps the book | src/test/books/BookDetailPage.test.jsx |  | To do |
@@ -80,7 +80,7 @@ The backend already has passing tests in CI, but only these are mapped to storie
 | E2E-04 | US-03 | Create a bookcase with shelves, rename it, delete it | e2e/bookcases.spec.js |  | Blocked |
 | E2E-05 | US-04, US-03 | Add a book manually with shelf, signed and numbered, and find it on that shelf | e2e/books.spec.js |  | Blocked |
 | E2E-06 | US-02 | Add a book by ISBN, with the external API stubbed | e2e/books.spec.js |  | Blocked |
-| E2E-07 | US-02 | Add a book while the external API is down, falling back to manual entry | e2e/books.spec.js |  | Blocked |
+| E2E-07 | US-02 | Add a book while the external API is down: a message is shown, and the link to manual entry works. | e2e/books.spec.js |  | Blocked |
 | E2E-08 | US-05 | Edit a book and move it to another shelf | e2e/books.spec.js |  | Blocked |
 | E2E-09 | US-05 | Copy on write: user A edits a catalogue book, user B still sees the original | e2e/books.spec.js |  | Blocked |
 | E2E-10 | US-09 | Change the read status, and it is still set after a reload | e2e/books.spec.js |  | Blocked |
@@ -94,7 +94,7 @@ File names are suggestions until the Playwright setup is merged.
 
 | ID | Story | What it checks | Device | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
-| MT-01 | US-02 | Scan a real barcode with the camera, and the fields fill in | Phone |  | To do |
+| MT-01 | US-02 | Scan a real barcode with the camera, and the found book is shown and can be added | Phone |  | To do |
 | MT-02 | US-01 | Log in with the same account on two devices and see the same collection | Phone and desktop |  | To do |
 | MT-03 | US-03, US-05 | Move a book to another shelf on the phone, then find it there on desktop | Phone and desktop |  | To do |
 | MT-04 | US-04 | Add a book manually using only the keyboard | Desktop |  | To do |
