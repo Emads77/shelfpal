@@ -18,3 +18,6 @@ vi.mock("../shared/logger.js", () => ({
   addTransport: vi.fn(),
   installGlobalErrorLogging: vi.fn(),
 }));
+
+// jsdom does not implement scrollIntoView, which ActionsMenu calls when it opens
+Element.prototype.scrollIntoView = vi.fn();

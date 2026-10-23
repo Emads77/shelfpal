@@ -24,13 +24,13 @@ This round covers the main functionality only: US-01, US-02, US-03, US-04, US-05
 | US-04 | Add a book manually |
 | US-05 | Edit a book entry |
 | US-06 | Remove a book |
-| US-09 | Mark a book as read or unread |
+| US-09 | Set the reading status of a book (unread, reading or finished) |
 
 Left out for now: US-07 search, US-08 suggestions, US-10 and US-11 offline. Add rows for any of these once they are built, since offline behaviour is graded in the FSD functionality row.
 
 ## Component tests (Vitest)
 
-12 of 21 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
+14 of 21 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
 
 | ID | Story | What it checks | File | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -46,8 +46,8 @@ Left out for now: US-07 search, US-08 suggestions, US-10 and US-11 offline. Add 
 | CT-10 | US-01 | client.js: a network failure becomes ApiError with status 0 and a readable message | src/test/api/client.test.js |  | Done |
 | CT-11 | US-01 | Login form shows the server error on wrong credentials | src/test/auth/LoginPage.test.jsx |  | Done |
 | CT-12 | US-01 | Login form stores the tokens and navigates on success | src/test/auth/LoginPage.test.jsx |  | Done |
-| CT-13 | US-09 | StatusMenu shows the current status and changes it with a PATCH | src/test/books/StatusMenu.test.jsx |  | To do |
-| CT-14 | US-09 | A failed status change shows an error and keeps the old status | src/test/books/StatusMenu.test.jsx |  | To do |
+| CT-13 | US-09 | Status menu shows the current reading status (unread, reading or finished), and choosing another one sends a PATCH | src/test/collection/StatusMenu.test.jsx |  | Done |
+| CT-14 | US-09 | A failed status change shows an error and restores the previous status | src/test/collection/StatusMenu.test.jsx |  | Done |
 | CT-15 | US-04 | Manual add: an empty submit shows title and author errors and sends no request | src/test/books/AddBookPage.test.jsx |  | To do |
 | CT-16 | US-04 | Manual add: a valid submit sends the trimmed payload | src/test/books/AddBookPage.test.jsx |  | To do |
 | CT-17 | US-02 | ISBN lookup fills the book fields | src/test/books/AddBookPage.test.jsx |  | To do |
@@ -60,12 +60,13 @@ File names for tests not written yet are suggestions. Match them to the real fea
 
 ## Backend API tests (Django)
 
-The backend already has passing tests in CI, but only these two are mapped to stories so far. Map the remaining existing tests to their stories as extra API rows.
+The backend already has passing tests in CI, but only these are mapped to stories so far. Map the remaining existing tests to their stories as extra API rows.
 
 | ID | Story | What it checks | File | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
 | API-01 | US-05 | Copy on write: an API book is cloned on the first book field edit, no clone when values are unchanged, other users keep the original | test\_copy\_update.py |  | Done |
 | API-02 | US-09 | An anonymous PATCH on a copy's status is rejected | Not written yet |  | To do |
+| API-03 | US-09 | A status outside unread, reading and finished is rejected with a 400, and the copy keeps its current status | test_copy_status.py |  | To do |
 
 ## End to end tests (Playwright)
 
@@ -113,4 +114,4 @@ Every story in scope has planned component, end to end and manual tests. The API
 | US-04 | CT-01, CT-02, CT-15, CT-16 |  | E2E-05 | MT-04 |
 | US-05 | CT-01, CT-02, CT-03, CT-19, CT-20 | API-01 | E2E-08, E2E-09 | MT-03 |
 | US-06 | CT-21 |  | E2E-11 | MT-05 |
-| US-09 | CT-13, CT-14 | API-02 | E2E-10 | MT-05 |
+| US-09 | CT-13, CT-14 | API-02, API-03 | E2E-10 | MT-05 |
