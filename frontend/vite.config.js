@@ -53,5 +53,6 @@ export default defineConfig(({ mode }) => ({
     environment: "jsdom",
     setupFiles: "./src/test/setup.js",
     include: ["src/**/*.test.{js,jsx}"],
+    clearMocks: true,
   },
 }));
