@@ -11,16 +11,16 @@ export function AuthProvider({ children }) {
   );
 
   async function clearOfflineData() {
-  try {
-    await caches.delete("api");
-  } catch {
-    // No Cache Storage in this browser: nothing to clear
+    try {
+      await caches.delete("api");
+    } catch {
+      // No Cache Storage in this browser: nothing to clear
+    }
   }
-}
 
   useEffect(() => {
     return onSessionExpired(() => {
-      clearOfflineData()
+      clearOfflineData();
       setUser(null);
       setStatus("anonymous");
     });
@@ -52,7 +52,7 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(async () => {
     await authApi.logout();
-    await clearOfflineData()
+    await clearOfflineData();
     setUser(null);
     setStatus("anonymous");
   }, []);
