@@ -30,7 +30,7 @@ Left out for now: US-07 search, US-08 suggestions, US-10 and US-11 offline. Add 
 
 ## Component tests (Vitest)
 
-6 of 21 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
+10 of 21 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
 
 | ID | Story | What it checks | File | Owner | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -40,10 +40,10 @@ Left out for now: US-07 search, US-08 suggestions, US-10 and US-11 offline. Add 
 | CT-04 | US-03 | Bookcases page shows loading, then the empty state | src/test/bookcases/BookcasesPage.test.jsx |  | Done |
 | CT-05 | US-03 | Add bookcase form opens from the empty state | src/test/bookcases/BookcasesPage.test.jsx |  | Done |
 | CT-06 | US-03 | Load error shows an alert, and retry recovers | src/test/bookcases/BookcasesPage.test.jsx |  | Done |
-| CT-07 | US-01 | client.js: a 401 triggers a token refresh and retries the request | src/test/api/client.test.js |  | To do |
-| CT-08 | US-01 | client.js: a failed refresh clears tokens and calls the session expired handler | src/test/api/client.test.js |  | To do |
-| CT-09 | US-01 | client.js: two parallel 401s trigger only one refresh | src/test/api/client.test.js |  | To do |
-| CT-10 | US-01 | client.js: a network failure becomes ApiError with status 0 and a readable message | src/test/api/client.test.js |  | To do |
+| CT-07 | US-01 | client.js: a 401 triggers a token refresh and retries the request | src/test/api/client.test.js |  | Done |
+| CT-08 | US-01 | client.js: a failed refresh clears tokens and calls the session expired handler | src/test/api/client.test.js |  | Done |
+| CT-09 | US-01 | client.js: two parallel 401s trigger only one refresh | src/test/api/client.test.js |  | Done |
+| CT-10 | US-01 | client.js: a network failure becomes ApiError with status 0 and a readable message | src/test/api/client.test.js |  | Done |
 | CT-11 | US-01 | Login form shows the server error on wrong credentials | src/test/auth/LoginPage.test.jsx |  | To do |
 | CT-12 | US-01 | Login form stores the tokens and navigates on success | src/test/auth/LoginPage.test.jsx |  | To do |
 | CT-13 | US-09 | StatusMenu shows the current status and changes it with a PATCH | src/test/books/StatusMenu.test.jsx |  | To do |
