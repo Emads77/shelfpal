@@ -29,7 +29,7 @@ Left out for now: US-08 Picker for read suggestions, US-11 Adding books while of
 
 ## Component tests (Vitest)
 
-27 of 28 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
+28 of 28 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
 
 | ID    | Story        | What it checks                                                                                                                                              | File                                        | Owner | Status |
 | ----- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | ----- | ------ |
@@ -55,7 +55,7 @@ Left out for now: US-08 Picker for read suggestions, US-11 Adding books while of
 | CT-20 | US-05        | Saving the edit form sends a PATCH with the edited fields and returns to the book                                                                           | src/test/books/EditBookPage.test.jsx        |       | Done   |
 | CT-21 | US-06        | Delete asks for confirmation, and cancel keeps the book                                                                                                     | src/test/books/BookDetailPage.test.jsx      |       | Done   |
 | CT-22 | US-10        | The offline banner appears when the connection drops and disappears when it returns                                                                         | src/test/shared/OfflineBanner.test.jsx      |       | Done   |
-| CT-23 | US-10        | Logout and session expiry clear the cached API data                                                                                                         | Not written yet                             |       | To do  |
+| CT-23 | US-10        | Logout and session expiry clear the cached API data                                                                                                         | src/test/state/AuthProvider.test.jsx        |       | Done   |
 | CT-24 | US-07        | Search shows only books whose title or author matches, ignoring case and surrounding spaces, and emptying the search box shows the whole collection again   | src/test/collection/CollectionPage.test.jsx |       | Done   |
 | CT-25 | US-07        | A search with no match shows the "No books match" message, and "Clear filters" shows the collection again                                                   | src/test/collection/CollectionPage.test.jsx |       | Done   |
 | CT-26 | US-07        | Each book shows its bookcase and shelf as a link to that shelf, and a book without a shelf shows "Unassigned"                                               | src/test/collection/CollectionPage.test.jsx |       | Done   |
