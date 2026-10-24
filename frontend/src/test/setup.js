@@ -21,3 +21,19 @@ vi.mock("../shared/logger.js", () => ({
 
 // jsdom does not implement scrollIntoView, which ActionsMenu calls when it opens
 Element.prototype.scrollIntoView = vi.fn();
+
+// jsdom does not implement showModal/close, which ConfirmDialog calls
+Object.defineProperty(HTMLDialogElement.prototype, "showModal", {
+  configurable: true,
+  writable: true,
+  value: /** @this {HTMLDialogElement} */ function showModal() {
+    this.setAttribute("open", "");
+  },
+});
+Object.defineProperty(HTMLDialogElement.prototype, "close", {
+  configurable: true,
+  writable: true,
+  value: /** @this {HTMLDialogElement} */ function close() {
+    this.removeAttribute("open");
+  },
+});
