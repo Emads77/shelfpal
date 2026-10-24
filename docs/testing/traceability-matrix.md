@@ -29,7 +29,7 @@ Left out for now: US-08 Picker for read suggestions, US-11 Adding books while of
 
 ## Component tests (Vitest)
 
-21 of 28 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
+27 of 28 done. These run in the frontend test job on every pipeline, with the API mocked by MSW.
 
 | ID    | Story        | What it checks                                                                                                                                              | File                                        | Owner | Status |
 | ----- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | ----- | ------ |
@@ -56,11 +56,11 @@ Left out for now: US-08 Picker for read suggestions, US-11 Adding books while of
 | CT-21 | US-06        | Delete asks for confirmation, and cancel keeps the book                                                                                                     | src/test/books/BookDetailPage.test.jsx      |       | Done   |
 | CT-22 | US-10        | The offline banner appears when the connection drops and disappears when it returns                                                                         | src/test/shared/OfflineBanner.test.jsx      |       | Done   |
 | CT-23 | US-10        | Logout and session expiry clear the cached API data                                                                                                         | Not written yet                             |       | To do  |
-| CT-24 | US-07        | Search shows only books whose title or author matches, ignoring case and surrounding spaces, and emptying the search box shows the whole collection again   | src/test/collection/CollectionPage.test.jsx |       | To do  |
-| CT-25 | US-07        | A search with no match shows the "No books match" message, and "Clear filters" shows the collection again                                                   | src/test/collection/CollectionPage.test.jsx |       | To do  |
-| CT-26 | US-07        | Each book shows its bookcase and shelf as a link to that shelf, and a book without a shelf shows "Unassigned"                                               | src/test/collection/CollectionPage.test.jsx |       | To do  |
-| CT-27 | US-09        | The status filter shows only unread, reading or finished books, and marks the selected status                                                               | src/test/collection/CollectionPage.test.jsx |       | To do  |
-| CT-28 | US-03        | validateDetails: a numbered copy needs a number, and the number cannot be higher than the edition size                                                      | src/test/books/copyDetails.test.js          |       | To do  |
+| CT-24 | US-07        | Search shows only books whose title or author matches, ignoring case and surrounding spaces, and emptying the search box shows the whole collection again   | src/test/collection/CollectionPage.test.jsx |       | Done   |
+| CT-25 | US-07        | A search with no match shows the "No books match" message, and "Clear filters" shows the collection again                                                   | src/test/collection/CollectionPage.test.jsx |       | Done   |
+| CT-26 | US-07        | Each book shows its bookcase and shelf as a link to that shelf, and a book without a shelf shows "Unassigned"                                               | src/test/collection/CollectionPage.test.jsx |       | Done   |
+| CT-27 | US-09        | The status filter shows only unread, reading or finished books, and marks the selected status                                                               | src/test/collection/CollectionPage.test.jsx |       | Done   |
+| CT-28 | US-03        | validateDetails: a numbered copy needs a number, and the number cannot be higher than the edition size                                                      | src/test/books/copyDetails.test.js          |       | Done   |
 
 ## Backend API tests (Django)
 
