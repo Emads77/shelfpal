@@ -9,6 +9,7 @@ import { installGlobalErrorLogging, logger } from "./shared/logger.js";
 import { initFaro } from "./shared/faro.js";
 import UpdateBanner from "./shared/ui/UpdateBanner.jsx";
 import OfflineBanner from "./shared/ui/OfflineBanner.jsx";
+import EnvironmentBadge from "./shared/ui/EnvironmentBadge.jsx";
 initFaro();
 installGlobalErrorLogging();
 
@@ -26,6 +27,7 @@ createRoot(document.getElementById("root"), {
 }).render(
   <StrictMode>
     <AuthProvider>
+      <EnvironmentBadge />
       <RouterProvider router={router} />
       <UpdateBanner />
       <OfflineBanner />
