@@ -1,58 +1,55 @@
 # Show and tell: Validation
 
-**Learning outcome:** You verify with your target audience whether the application meets their needs.
-**Rubric row:** Validation (10%)
-**Main work by:** [TO FILL]
+**Learning outcome:** You verify with your target audience whether the application meets their needs. **Rubric row:**
+Validation (10%)
+**Main work by:** Andrea
 
 ## What we built
 
-We checked with book collectors at several moments in the project, using different methods. [TO FILL: one or two sentences on the main finding]
+We checked with book collectors at several moments in the project, using different
+methods. An initial survey was done to gather information about what the users from the target audience wanted. A UX
+test report with a user testing the deployed application was conducted at the end of the project.
 
 ## Validation per phase
 
-| Phase | Method | Who | What we learned | What we changed |
-| --- | --- | --- | --- | --- |
-| Problem and idea | Survey (Google Form) | [TO FILL: number] collectors | Manual entry is the main pain; phone and laptop; short outages are fine | Barcode scanning, offline reading, 95% availability |
-| Prototype | [TO FILL: UX test on the Figma prototype from DE] | [TO FILL] | [TO FILL] | [TO FILL] |
-| Working app on acceptance | [TO FILL: task based user test] | [TO FILL] | [TO FILL] | [TO FILL] |
+| Phase                     | Method                                                                                                            | Who           | What we learned                                                         | What we changed                                     |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------|---------------|-------------------------------------------------------------------------|-----------------------------------------------------|
+| Problem and idea          | Survey (Google Form)                                                                                              | 15 collectors | Manual entry is the main pain; phone and laptop; short outages are fine | Barcode scanning, offline reading, 95% availability |
+| Prototype                 | https://www.figma.com/design/AZXx5TM9pY9BZ718YuFxcN/ShelfPal---Prototype?node-id=1669-162202&t=QvR9bZQZYCglefOT-1 | 1 collector   | Not applicable                                                          | Nothing yet                                         |
+| Working app on production | 5 seconds test and Think aloud methods                                                                            | 1 collector   | App generally well received, technical problems with scanner            | Nothing yet, gathered feedback                      |
 
 ## Proof
 
-| What | Where to see it |
-| --- | --- |
-| Survey responses | `Target Audience Survey Responses.md` |
-| Test plan with tasks and success criteria | [TO FILL] |
-| Notes, recordings or screenshots per participant | [TO FILL] |
-| UX test report (DE) | [TO FILL] |
+| What                | Where to see it             |
+|---------------------|-----------------------------|
+| Survey responses    | `SurveyResponses.pdf`       |
+| UX test report (DE) | `UX-Test-Report-Group5.pdf` |
 
 ## What the assessor looks at
 
-| Assessor looks at | Our answer | Proof |
-| --- | --- | --- |
-| Different methods in different phases | See the table above. | |
-| Representative participants | [TO FILL: why they are collectors, collection size] | |
-| Outcome and what we did with it | [TO FILL] | |
-| Preparation and engagement | [TO FILL: test plan, tasks, how long, what they said] | |
-| Does it solve their problem | [TO FILL: for example time to add a book by scanning versus by hand] | |
+| Assessor looks at                     | Our answer                                                                                                                                                                        | Proof                               |
+|---------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------|
+| Different methods in different phases | A survey of 15 collectors for the problem, a review of the Figma prototype with one collector, and a 5 second test plus a think aloud test with one collector on the working app. | Table above                         |
+| Representative participants           | The participant is a book collector with a collection of around 500 books, so they are in our target audience, and they catalogue their books today with a spreadsheet.           | `UX-Test-Report-Group5.pdf`         |
+| Outcome and what we did with it       | The app was generally well received. The participant ran into technical problems with the scanner. We recorded this feedback and the recommendations in the test report           | `UX-Test-Report-Group5.pdf`         |
+| Preparation and engagement            | The 5 second test checked first impressions of the app, and the think aloud test had the participant do tasks on the deployed app while saying what they were thinking.           | `UX-Test-Report-Group5.pdf`         |
+| Does it solve their problem           | In the survey, the main pain was slow manual entry. In the test, the partecipant had trouble getting the scanner to work, but they liked a lot about the rest.                    | `UX-Test-Report-Group5.pdf`, survey |
 
 ## Recommendations not built yet
 
-* [TO FILL: for example CSV export, which several respondents asked for]
+* The books will need to have a lot more detail. Different editions of the same book need to be able to be picked when
+  scanning. Offline use has to be improved a lot. Picker function has to be implemented.
 
 ## What we learned
 
-### Emad
-
-* **Could not do at the start, can do now:** [TO FILL]
-* **Would do differently next time:** [TO FILL]
-* **Already knew before this course:** [TO FILL]
-
 ### Andrea
 
-* **Could not do at the start, can do now:** [TO FILL]
-* **Would do differently next time:** [TO FILL]
-* **Already knew before this course:** [TO FILL]
+* **Could not do at the start, can do now:** I learned about methods to gather feedback and I have a better idea of what
+  to be aware of when designing something for other people. I am able to tunnel vision less into my own dev ideas.
+* **Would do differently next time:** Gather feedback earlier, while we still have time to make changes, it needs a
+  bigger time window though.
+* **Already knew before this course:** I never really interacted with real users for a project I built
 
 ## Use of generative AI
 
-[TO FILL]
+No AI was used to conduct the survey or the UX test/interview.

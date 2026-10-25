@@ -2,7 +2,7 @@
 
 **Learning outcome:** You ensure your application's functionality with automated end to end tests.
 **Rubric row:** Application tests (15%)
-**Main work by:** Emad (Vitest setup #88, Playwright end to end tests #96), Andrea (component tests CT-07 to CT-28 and matrix updates, #80)
+**Main work by:** Emad (Vitest setup #88, Playwright end to end tests #96), Andrea (component tests CT-07 to CT-28 and matrix updates, #80, Manual tests with report, some of the end to end tests)
 
 ## What we built
 
@@ -10,15 +10,14 @@ Ten Playwright tests drive the real app in a browser: login and logout, wrong pa
 
 ## Proof
 
-| What                                       | Where to see it                                  |
-| ------------------------------------------ | ------------------------------------------------ |
-| End to end tests                           | `frontend/e2e/*.spec.js`                         |
-| Test helpers (unique user, API setup)      | `frontend/e2e/helpers.js`, `frontend/e2e/api.js` |
-| Pipeline job                               | `e2e-acceptance` in `.gitlab-ci.yml`             |
-| Traceability matrix                        | `docs/testing/traceability-matrix.md`            |
-| Screenshot: two local runs, 10 passed each | [TO FILL: screenshot of the HTML report]         |
-| Screenshot: green `e2e-acceptance` job     | [TO FILL: screenshot]                            |
-| Manual test report                         | [TO FILL: MT-01 to MT-09 results]                |
+| What                                   | Where to see it                                  |
+|----------------------------------------|--------------------------------------------------|
+| End to end tests                       | `frontend/e2e/*.spec.js`                         |
+| Test helpers (unique user, API setup)  | `frontend/e2e/helpers.js`, `frontend/e2e/api.js` |
+| Pipeline job                           | `e2e-acceptance` in `.gitlab-ci.yml`             |
+| Traceability matrix                    | `docs/testing/traceability-matrix.md`            |
+| Screenshot: green `e2e-acceptance` job | `06_end_to_end_tests_jod_succeed.png`            |
+| Manual test report                     | `ManualTestsReport-Group5.pdf`                   |
 
 ## What the assessor looks at
 
@@ -54,10 +53,10 @@ Ten Playwright tests drive the real app in a browser: login and logout, wrong pa
 
 ### Andrea
 
-- **Could not do at the start, can do now:** [TO FILL]
-- **Would do differently next time:** [TO FILL]
-- **Already knew before this course:** [TO FILL]
+- **Could not do at the start, can do now:** I know more libraries for component tests and end to end tests that I had never used before. The whole process of testing an entire application is general is a lot clearer to me now.
+- **Would do differently next time:** Definitely implement more types of tests earlier in the process
+- **Already knew before this course:** I mostly only did unit tests and manual tests before
 
 ## Use of generative AI
 
-This document was drafted with Claude from our own project notes and checked by us.
+This document was drafted with Claude from our own project notes and checked by us. AI helped with generating the tests and setting up the environment to run them. 
