@@ -10,6 +10,7 @@ if grep -q '^DEPLOY_ENV=acceptance$' .env; then
 fi
 
 docker compose up -d --no-deps --wait --wait-timeout 120 backend-a
+sleep 15
 docker compose up -d --no-deps --wait --wait-timeout 120 backend-b
 
 docker compose up -d --no-deps --wait --wait-timeout 120 frontend-b
