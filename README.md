@@ -271,8 +271,8 @@ We use generative AI (Claude) to explain new concepts, help with debugging, revi
 
 ## Authors
 
-Emad Sawan and Andrea Tolu, Saxion University of Applied Sciences, Advanced Application Development 2026 to 2027, group 09.
+Emad Sawan and Andrea Tolu, Saxion University of Applied Sciences, Advanced Application Development 2026 to 2027, group 05.
 
 ## Project status
 
-Built for the Full Stack Development and Real World Applications courses, and continued in the second quartile. Planned next: nightly database backups, a scheduled cleanup of expired login tokens, and the reading suggestions picker.
+Built for the Full Stack Development and Real World Applications courses, and continued in the second quartile. Planned next: nightly database backups, a scheduled cleanup of expired login tokens, and the reading suggestions picker, additional details in the book information.
