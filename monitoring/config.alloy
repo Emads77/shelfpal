@@ -6,8 +6,28 @@ discovery.relabel "containers" {
   targets = discovery.docker.containers.targets
 
   rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
+    regex         = coalesce(sys.env("COMPOSE_PROJECT"), ".*")
+    action        = "keep"
+  }
+
+  rule {
     source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
     target_label  = "service"
+  }
+
+   rule {
+    source_labels = ["service"]
+    regex         = "(backend|frontend)-(.+)"
+    target_label  = "replica"
+    replacement   = "$2"
+  }
+
+  rule {
+    source_labels = ["service"]
+    regex         = "(backend|frontend)-.+"
+    target_label  = "service"
+    replacement   = "$1"
   }
 
   rule {
@@ -41,6 +61,14 @@ loki.process "logs" {
         level  = "",
         logger = "",
       }
+    }
+  }
+
+  stage.match {
+    selector = "{service=\"frontend\"}"
+
+    stage.drop {
+      expression = "\"GET / HTTP/1\\.1\" 200 [0-9]+ \"-\" \"(Wget|Go-http-client/1\\.1)\""
     }
   }
 }

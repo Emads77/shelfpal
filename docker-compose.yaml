@@ -28,6 +28,12 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      default:
+        aliases:
+          - backend-a
+          - backend-b
+          
   frontend:
     build: ./frontend
     ports:

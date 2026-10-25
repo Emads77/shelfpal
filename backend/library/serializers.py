@@ -1,8 +1,20 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from library.models import Book, Bookcase, Copy, Shelf
 
 MAX_BULK_COPIES = 200
+
+
+def normalize_isbn(value):
+    if value is None:
+        return None
+    value = value.replace("-", "").strip()
+    if not value:
+        return None
+    if len(value) not in (10, 13):
+        raise serializers.ValidationError("ISBN must be 10 or 13 digits.")
+    return value
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -73,6 +85,17 @@ class CopyBookSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "author", "cover"]
 
 
+class CopyLocationSerializer(serializers.Serializer):
+    bookcase_id = serializers.IntegerField()
+    bookcase_name = serializers.CharField()
+    shelf_id = serializers.IntegerField()
+    shelf_name = serializers.CharField()
+
+
+class CountResponseSerializer(serializers.Serializer):
+    count = serializers.IntegerField()
+
+
 class CopyReadSerializer(serializers.ModelSerializer):
     book = CopyBookSerializer(read_only=True)
     location = serializers.SerializerMethodField()
@@ -84,12 +107,13 @@ class CopyReadSerializer(serializers.ModelSerializer):
             "book",
             "shelf",
             "location",
-            "is_read",
+            "status",
             "is_signed",
             "edition_number",
             "edition_size",
         ]
 
+    @extend_schema_field(CopyLocationSerializer(allow_null=True))
     def get_location(self, copy):
         shelf = copy.shelf
         if shelf is None:
@@ -115,7 +139,41 @@ class CopyListQuerySerializer(serializers.Serializer):
 
 
 class CopyUpdateSerializer(serializers.Serializer):
-    is_read = serializers.BooleanField()
+    status = serializers.ChoiceField(choices=Copy.Status.choices, required=False)
+    is_signed = serializers.BooleanField(required=False)
+    edition_number = serializers.IntegerField(
+        required=False, allow_null=True, min_value=1, max_value=999999
+    )
+    edition_size = serializers.IntegerField(
+        required=False, allow_null=True, min_value=1, max_value=999999
+    )
+    title = serializers.CharField(max_length=200, required=False)
+    author = serializers.CharField(max_length=200, required=False)
+    isbn = serializers.CharField(
+        max_length=17, required=False, allow_blank=True, allow_null=True
+    )
+    publisher = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    cover = serializers.URLField(required=False, allow_blank=True)
+
+    def validate_isbn(self, value):
+        return normalize_isbn(value)
+
+    def validate(self, attrs):
+        if not attrs:
+            raise serializers.ValidationError("Nothing to update.")
+
+        copy = self.context["copy"]
+        number = attrs.get("edition_number", copy.edition_number)
+        size = attrs.get("edition_size", copy.edition_size)
+        if size is not None and number is None:
+            raise serializers.ValidationError(
+                {"edition_number": "Enter the number of your copy."}
+            )
+        if number is not None and size is not None and number > size:
+            raise serializers.ValidationError(
+                {"edition_number": "The number cannot be higher than the edition size."}
+            )
+        return attrs
 
 
 class CopyIdsSerializer(serializers.Serializer):
@@ -165,14 +223,7 @@ class ManualBookCreateSerializer(CopyDetailsSerializer):
     shelf = serializers.IntegerField(required=False, allow_null=True, min_value=1)
 
     def validate_isbn(self, value):
-        if value is None:
-            return None
-        value = value.replace("-", "").strip()
-        if not value:
-            return None
-        if len(value) not in (10, 13):
-            raise serializers.ValidationError("ISBN must be 10 or 13 characters.")
-        return value
+        return normalize_isbn(value)
 
 
 class ISBNLookupSerializer(serializers.Serializer):

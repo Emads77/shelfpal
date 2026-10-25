@@ -1,3 +1,9 @@
+from drf_spectacular.utils import (
+    OpenApiResponse,
+    PolymorphicProxySerializer,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -16,6 +22,7 @@ from library.serializers import (
     CopyMoveSerializer,
     CopyReadSerializer,
     CopyUpdateSerializer,
+    CountResponseSerializer,
     ISBNLookupSerializer,
     LibraryOverviewSerializer,
     ManualBookCreateSerializer,
@@ -27,6 +34,7 @@ from library.serializers import (
 class BookcaseViewSet(viewsets.ModelViewSet):
     serializer_class = BookcaseSerializer
     permission_classes = [IsAuthenticated]
+    lookup_value_regex = r"\d+"
 
     def get_queryset(self):
         return services.list_bookcases(self.request.user)
@@ -51,6 +59,7 @@ class BookcaseViewSet(viewsets.ModelViewSet):
 class ShelfViewSet(viewsets.ModelViewSet):
     serializer_class = ShelfSerializer
     permission_classes = [IsAuthenticated]
+    lookup_value_regex = r"\d+"
 
     def get_queryset(self):
         return services.list_shelves(
@@ -65,6 +74,10 @@ class ShelfViewSet(viewsets.ModelViewSet):
             name=serializer.validated_data["name"],
         )
 
+    @extend_schema(
+        request=ShelfBulkCreateSerializer,
+        responses={201: ShelfSerializer(many=True)},
+    )
     @action(detail=False, methods=["post"], url_path="bulk")
     def bulk_create(self, request, bookcase_pk=None):
         serializer = ShelfBulkCreateSerializer(data=request.data)
@@ -92,11 +105,31 @@ class ShelfViewSet(viewsets.ModelViewSet):
 class LibraryOverviewView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=LibraryOverviewSerializer)
     def get(self, request):
         data = services.get_library_overview(request.user)
         return Response(LibraryOverviewSerializer(data).data)
 
 
+@extend_schema_view(
+    list=extend_schema(
+        parameters=[CopyListQuerySerializer],
+        responses=CopyReadSerializer(many=True),
+    ),
+    create=extend_schema(
+        request=PolymorphicProxySerializer(
+            component_name="CopyCreate",
+            serializers=[CopyFromBookCreateSerializer, ManualBookCreateSerializer],
+            resource_type_field_name=None,
+        ),
+        responses={201: CopyReadSerializer},
+    ),
+    retrieve=extend_schema(responses=CopyDetailSerializer),
+    partial_update=extend_schema(
+        request=CopyUpdateSerializer,
+        responses=CopyDetailSerializer,
+    ),
+)
 class CopyViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
     lookup_value_regex = r"\d+"
@@ -128,13 +161,13 @@ class CopyViewSet(viewsets.ViewSet):
         return Response(CopyDetailSerializer(copy).data)
 
     def partial_update(self, request, pk=None):
-        serializer = CopyUpdateSerializer(data=request.data)
+        copy = services.get_copy(request.user, pk)
+        serializer = CopyUpdateSerializer(data=request.data, context={"copy": copy})
         serializer.is_valid(raise_exception=True)
-        copy = services.update_copy(
-            request.user, pk, serializer.validated_data["is_read"]
-        )
-        return Response(CopyReadSerializer(copy).data)
+        copy = services.update_copy(copy, serializer.validated_data)
+        return Response(CopyDetailSerializer(copy).data)
 
+    @extend_schema(request=CopyMoveSerializer, responses=CountResponseSerializer)
     @action(detail=False, methods=["post"], url_path="move")
     def bulk_move(self, request):
         serializer = CopyMoveSerializer(data=request.data)
@@ -146,6 +179,7 @@ class CopyViewSet(viewsets.ViewSet):
         )
         return Response({"count": count})
 
+    @extend_schema(request=CopyIdsSerializer, responses=CountResponseSerializer)
     @action(detail=False, methods=["post"], url_path="delete")
     def bulk_delete(self, request):
         serializer = CopyIdsSerializer(data=request.data)
@@ -157,6 +191,14 @@ class CopyViewSet(viewsets.ViewSet):
 class BookLookupView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        parameters=[ISBNLookupSerializer],
+        responses={
+            200: BookSummarySerializer,
+            404: OpenApiResponse(description="No book found for this ISBN."),
+            503: OpenApiResponse(description="The external lookup is unavailable."),
+        },
+    )
     def get(self, request):
         serializer = ISBNLookupSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)

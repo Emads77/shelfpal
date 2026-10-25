@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -15,6 +16,9 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
 
+    @extend_schema(
+        request=RegisterInputSerializer, responses={201: UserOutputSerializer}
+    )
     def post(self, request):
         input_serializer = RegisterInputSerializer(data=request.data)
         input_serializer.is_valid(raise_exception=True)
@@ -29,6 +33,7 @@ class LogoutView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
 
+    @extend_schema(request=LogoutInputSerializer, responses={204: None})
     def post(self, request):
         serializer = LogoutInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -39,5 +44,6 @@ class LogoutView(APIView):
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(responses=UserOutputSerializer)
     def get(self, request):
         return Response(UserOutputSerializer(request.user).data)

@@ -38,6 +38,19 @@ export function useCopiesView(shelfId) {
     }
   }, [fetchData, key]);
 
+  const patchCopy = useCallback((copyId, changes) => {
+    setData((current) =>
+      current === null
+        ? current
+        : {
+            ...current,
+            copies: current.copies.map((copy) =>
+              copy.id === copyId ? { ...copy, ...changes } : copy,
+            ),
+          },
+    );
+  }, []);
+
   function retry() {
     setFailure(null);
     setAttempt((n) => n + 1);
@@ -52,6 +65,7 @@ export function useCopiesView(shelfId) {
     loading: !loaded && !error,
     error,
     retry,
+    patchCopy,
     reload,
   };
 }

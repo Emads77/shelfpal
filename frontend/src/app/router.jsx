@@ -11,6 +11,7 @@ import ShelfPage from "../features/bookcases/ShelfPage.jsx";
 import UnassignedPage from "../features/bookcases/UnassignedPage.jsx";
 import AddBookPage from "../features/books/AddBookPage.jsx";
 import ScanBookPage from "../features/books/ScanBookPage.jsx";
+import EditBookPage from "../features/books/EditBookPage.jsx";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ export const router = createBrowserRouter([
           {
             path: "books/:copyId",
             element: <BookDetailPage />,
+          },
+          {
+            path: "books/:copyId/edit",
+            element: <EditBookPage />,
           },
           { path: "bookcases", element: <BookcasesPage /> },
           { path: "bookcases/unassigned", element: <UnassignedPage /> },

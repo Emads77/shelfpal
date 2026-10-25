@@ -1,4 +1,4 @@
-stages: [lint, test, build]
+stages: [lint, test, build, deploy, e2e]
 
 backend-lint:
   stage: lint
@@ -27,6 +27,7 @@ backend-test:
     - name: postgres:17
       alias: postgres
   variables:
+    SECRET_KEY: ci-test-only-not-secret
     POSTGRES_DB: shelfpal_test
     POSTGRES_USER: shelfpal
     POSTGRES_PASSWORD: ci_password
@@ -38,6 +39,21 @@ backend-test:
   script:
     - python manage.py test
 
+frontend-test:
+  stage: test
+  image: node:22
+  cache:
+    key:
+      files:
+        - frontend/package-lock.json
+    paths:
+      - frontend/.npm/
+  before_script:
+    - cd frontend
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npm test
+
 .build-image:
   stage: build
   image: docker:27
@@ -48,7 +64,7 @@ backend-test:
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
   script:
-    - docker build -t "$IMAGE:$CI_COMMIT_SHORT_SHA" -t "$IMAGE:$CI_COMMIT_REF_SLUG" "$CONTEXT"
+    - docker build $BUILD_ARGS -t "$IMAGE:$CI_COMMIT_SHORT_SHA" -t "$IMAGE:$CI_COMMIT_REF_SLUG" "$CONTEXT"
     - docker push "$IMAGE:$CI_COMMIT_SHORT_SHA"
     - docker push "$IMAGE:$CI_COMMIT_REF_SLUG"
   rules:
@@ -64,3 +80,71 @@ frontend-build:
   variables:
     IMAGE: $CI_REGISTRY_IMAGE/frontend
     CONTEXT: frontend
+    BUILD_ARGS: --build-arg VITE_FARO_URL=$VITE_FARO_URL --build-arg VITE_APP_VERSION=$CI_COMMIT_SHORT_SHA
+
+.deploy:
+  stage: deploy
+  image: alpine:3.20
+  variables:
+    DEPLOY_HOST: 65.21.4.61
+  before_script:
+    - apk add --no-cache openssh-client
+    - chmod 600 "$SSH_PRIVATE_KEY"
+  script:
+    - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes "$ENV_FILE" "root@$DEPLOY_HOST:$DEPLOY_DIR/.env"
+    - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes deploy/docker-compose.server.yaml "root@$DEPLOY_HOST:$DEPLOY_DIR/docker-compose.yaml"
+    - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes deploy/deploy.sh "root@$DEPLOY_HOST:$DEPLOY_DIR/deploy.sh"
+    - scp -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes monitoring/config.alloy "root@$DEPLOY_HOST:$DEPLOY_DIR/config.alloy"
+    - ssh -i "$SSH_PRIVATE_KEY" -o UserKnownHostsFile="$SSH_KNOWN_HOSTS" -o StrictHostKeyChecking=yes "root@$DEPLOY_HOST" "cd $DEPLOY_DIR && sh deploy.sh $CI_COMMIT_SHORT_SHA"
+
+deploy-acceptance:
+  extends: .deploy
+  variables:
+    DEPLOY_DIR: /opt/shelfpal/acc
+  environment:
+    name: acceptance
+    url: https://acc.shelfpal.saxion.college
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+
+deploy-production:
+  extends: .deploy
+  variables:
+    DEPLOY_DIR: /opt/shelfpal/prod
+  environment:
+    name: production
+    url: https://shelfpal.saxion.college
+  before_script:
+    - apk add --no-cache openssh-client git
+    - chmod 600 "$SSH_PRIVATE_KEY"
+    - export CI_COMMIT_SHORT_SHA=$(git rev-parse --short=8 HEAD^2)
+    - echo "Deploying tested image $CI_COMMIT_SHORT_SHA"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+
+
+e2e-acceptance:
+  stage: e2e
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
+  needs: [deploy-acceptance]
+  variables:
+    E2E_BASE_URL: https://acc.shelfpal.saxion.college
+  cache:
+    key:
+      files:
+        - frontend/package-lock.json
+    paths:
+      - frontend/.npm/
+  before_script:
+    - cd frontend
+    - npm ci --cache .npm --prefer-offline
+  script:
+    - npx playwright test
+  artifacts:
+    when: always
+    paths:
+      - frontend/playwright-report/
+    expire_in: 30 days
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"

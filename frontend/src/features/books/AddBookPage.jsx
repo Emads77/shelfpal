@@ -4,9 +4,16 @@ import { useNavigate } from "react-router";
 import Button from "../../shared/ui/Button.jsx";
 import FoldSection from "../../shared/ui/FoldSection.jsx";
 import FormError from "../../shared/ui/FormError.jsx";
-import FormField from "../../shared/ui/FormField.jsx";
+import ShelfPicker from "../bookcases/ShelfPicker.jsx";
 import { rememberShelf, useShelfPicker } from "../bookcases/useShelfPicker.js";
 import { addBookManually } from "./api.js";
+import BookFieldsSection from "./BookFieldsSection.jsx";
+import {
+  BOOK_FIELD_NAMES,
+  bookPayload,
+  EMPTY_BOOK,
+  validateBook,
+} from "./bookFields.js";
 import CopyDetailsSection from "./CopyDetailsSection.jsx";
 import {
   detailsPayload,
@@ -15,38 +22,18 @@ import {
 } from "./copyDetails.js";
 import { splitServerErrors } from "./serverErrors.js";
 import "./books.css";
-import ShelfPicker from "../bookcases/ShelfPicker.jsx";
-
-const EMPTY_FORM = {
-  title: "",
-  author: "",
-  isbn: "",
-  publisher: "",
-  cover: "",
-};
 
 //Order in which the first invalid field receives focus
 const FIELD_ORDER = [
-  "title",
-  "author",
-  "isbn",
-  "publisher",
-  "cover",
+  ...BOOK_FIELD_NAMES,
   "shelf",
   "edition_number",
   "edition_size",
 ];
 
-function validate(form, details) {
-  const errors = {};
-  if (!form.title.trim()) errors.title = ["Title is required."];
-  if (!form.author.trim()) errors.author = ["Author is required."];
-  return { ...errors, ...validateDetails(details) };
-}
-
 export default function AddBookPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [form, setForm] = useState(EMPTY_BOOK);
   const [details, setDetails] = useState(EMPTY_DETAILS);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
@@ -89,7 +76,7 @@ export default function AddBookPage() {
     event.preventDefault();
     const formElement = event.currentTarget;
 
-    const found = validate(form, details);
+    const found = { ...validateBook(form), ...validateDetails(details) };
     if (Object.keys(found).length > 0) {
       showErrors(found, formElement);
       return;
@@ -99,11 +86,7 @@ export default function AddBookPage() {
     setFormError("");
     try {
       const copy = await addBookManually({
-        title: form.title.trim(),
-        author: form.author.trim(),
-        isbn: form.isbn.trim(),
-        publisher: form.publisher.trim(),
-        cover: form.cover.trim(),
+        ...bookPayload(form),
         shelf: picker.shelf === "" ? null : Number(picker.shelf),
         ...detailsPayload(details),
       });
@@ -115,9 +98,6 @@ export default function AddBookPage() {
     }
   }
 
-  const aboutHasErrors = ["title", "author", "isbn", "publisher", "cover"].some(
-    (k) => errors[k],
-  );
   const copyHasErrors = ["shelf", "edition_number", "edition_size"].some(
     (k) => errors[k],
   );
@@ -126,53 +106,12 @@ export default function AddBookPage() {
     <form className="add-book" noValidate onSubmit={handleSubmit}>
       <h1>Add a book</h1>
 
-      <FoldSection title="About the book" hasErrors={aboutHasErrors}>
-        <FormField
-          id="title"
-          label="Title"
-          maxLength={200}
-          value={form.title}
-          readOnly={saving}
-          errors={errors.title}
-          onChange={(e) => update("title", e.target.value)}
-        />
-        <FormField
-          id="author"
-          label="Author"
-          maxLength={200}
-          value={form.author}
-          readOnly={saving}
-          errors={errors.author}
-          onChange={(e) => update("author", e.target.value)}
-        />
-        <FormField
-          id="isbn"
-          label="ISBN (optional)"
-          maxLength={17}
-          value={form.isbn}
-          readOnly={saving}
-          errors={errors.isbn}
-          onChange={(e) => update("isbn", e.target.value)}
-        />
-        <FormField
-          id="publisher"
-          label="Publisher (optional)"
-          maxLength={200}
-          value={form.publisher}
-          readOnly={saving}
-          errors={errors.publisher}
-          onChange={(e) => update("publisher", e.target.value)}
-        />
-        <FormField
-          id="cover"
-          label="Cover URL (optional)"
-          type="url"
-          value={form.cover}
-          readOnly={saving}
-          errors={errors.cover}
-          onChange={(e) => update("cover", e.target.value)}
-        />
-      </FoldSection>
+      <BookFieldsSection
+        value={form}
+        onChange={update}
+        errors={errors}
+        disabled={saving}
+      />
 
       <FoldSection
         title="Your copy"
