@@ -57,3 +57,20 @@ export async function listBookcases(request, token) {
   expect(response.status()).toBe(200);
   return response.json();
 }
+
+export async function listShelves(request, token, bookcaseId) {
+  const response = await request.get(`/api/bookcases/${bookcaseId}/shelves/`, {
+    headers: auth(token),
+  });
+  expect(response.status()).toBe(200);
+  return response.json();
+}
+
+export async function addCopyFromBook(request, token, bookId, shelf = null) {
+  const response = await request.post("/api/copies/", {
+    headers: auth(token),
+    data: { book: bookId, shelf },
+  });
+  expect(response.status(), await response.text()).toBe(201);
+  return response.json();
+}

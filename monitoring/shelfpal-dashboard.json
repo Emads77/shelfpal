@@ -5,8 +5,8 @@
     "name": "mihv7xn",
     "namespace": "stacks-1871247",
     "uid": "241b91d8-6819-4721-8568-7987ea8fc29f",
-    "resourceVersion": "2110018953379733504",
-    "generation": 6,
+    "resourceVersion": "2113570373109129216",
+    "generation": 13,
     "creationTimestamp": "2026-10-13T13:37:19Z",
     "labels": {
       "grafana.app/deprecatedInternalID": "2317318131556352"
@@ -15,7 +15,7 @@
       "grafana.app/createdBy": "user:cg13q531ka1vke",
       "grafana.app/saved-from-ui": "Grafana Cloud",
       "grafana.app/updatedBy": "user:cg13q531ka1vke",
-      "grafana.app/updatedTimestamp": "2026-10-13T14:44:55Z"
+      "grafana.app/updatedTimestamp": "2026-10-23T09:56:59Z"
     }
   },
   "spec": {
@@ -67,7 +67,7 @@
                       "spec": {
                         "direction": "backward",
                         "editorMode": "code",
-                        "expr": "{service=\"backend\", env=~\"$env\", level=~\"$level\"} | json | request_id=~\".*$request_id.*\" | line_format \"{{.message}} request_id={{.request_id}}\"",
+                        "expr": "{service=\"backend\", env=~\"$env\", level=~\"$level\"} != \"/api/health/\" | json | request_id=~\".*$request_id.*\" | line_format \"{{.message}} request_id={{.request_id}}\"",
                         "queryType": "range"
                       }
                     },
@@ -83,7 +83,7 @@
           "vizConfig": {
             "kind": "VizConfig",
             "group": "logs",
-            "version": "13.3.0-37900028434",
+            "version": "13.3.0-39387670315",
             "spec": {
               "options": {
                 "dedupStrategy": "none",
@@ -132,7 +132,7 @@
                       "spec": {
                         "direction": "backward",
                         "editorMode": "code",
-                        "expr": "sum(count_over_time({service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"}[$__auto]))",
+                        "expr": "sum(count_over_time({service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} != \"/api/health/\" [$__auto]))",
                         "legendFormat": "Requests",
                         "queryType": "range"
                       }
@@ -149,7 +149,7 @@
           "vizConfig": {
             "kind": "VizConfig",
             "group": "timeseries",
-            "version": "13.3.0-37900028434",
+            "version": "13.3.0-39387670315",
             "spec": {
               "options": {
                 "legend": {
@@ -247,7 +247,7 @@
                       "spec": {
                         "direction": "backward",
                         "editorMode": "code",
-                        "expr": "(sum(count_over_time({service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} | json | status >= 500 [$__range])) or vector(0)) / sum(count_over_time({service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"}[$__range])) * 100",
+                        "expr": "(sum(count_over_time({service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} != \"/api/health/\" | json | status >= 500 [$__range])) or vector(0)) / sum(count_over_time({service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} != \"/api/health/\" [$__range])) * 100",
                         "queryType": "instant"
                       }
                     },
@@ -263,7 +263,7 @@
           "vizConfig": {
             "kind": "VizConfig",
             "group": "stat",
-            "version": "13.3.0-37900028434",
+            "version": "13.3.0-39387670315",
             "spec": {
               "options": {
                 "colorMode": "value",
@@ -336,7 +336,7 @@
                       "spec": {
                         "direction": "backward",
                         "editorMode": "code",
-                        "expr": "max(quantile_over_time(0.95, {service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} | json | unwrap duration_ms [$__auto]))",
+                        "expr": "max(quantile_over_time(0.95, {service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} != \"/api/health/\" | json | unwrap duration_ms [$__auto]))",
                         "legendFormat": "p95",
                         "queryType": "range"
                       }
@@ -358,7 +358,7 @@
                       "spec": {
                         "direction": "backward",
                         "editorMode": "code",
-                        "expr": "max(quantile_over_time(0.5, {service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} | json | unwrap duration_ms [$__auto]))",
+                        "expr": "max(quantile_over_time(0.5, {service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} != \"/api/health/\" | json | unwrap duration_ms [$__auto]))",
                         "legendFormat": "p50",
                         "queryType": "range"
                       }
@@ -375,7 +375,7 @@
           "vizConfig": {
             "kind": "VizConfig",
             "group": "timeseries",
-            "version": "13.3.0-37900028434",
+            "version": "13.3.0-39387670315",
             "spec": {
               "options": {
                 "legend": {
@@ -474,7 +474,7 @@
                       "spec": {
                         "direction": "backward",
                         "editorMode": "code",
-                        "expr": "sum by (status) (count_over_time({service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} | json [$__auto]))",
+                        "expr": "sum by (status) (count_over_time({service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} != \"/api/health/\" | json [$__auto]))",
                         "legendFormat": "HTTP {{status}}",
                         "queryType": "range"
                       }
@@ -491,7 +491,7 @@
           "vizConfig": {
             "kind": "VizConfig",
             "group": "timeseries",
-            "version": "13.3.0-37900028434",
+            "version": "13.3.0-39387670315",
             "spec": {
               "options": {
                 "legend": {
@@ -589,7 +589,7 @@
                       "spec": {
                         "direction": "backward",
                         "editorMode": "code",
-                        "expr": "topk(5, sum by (endpoint) (count_over_time({service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} | json | endpoint != \"\" [$__range])))",
+                        "expr": "topk(5, sum by (endpoint) (count_over_time({service=\"backend\", env=~\"$env\", logger=\"shelfpal.request\"} != \"/api/health/\" | json | endpoint != \"\" [$__range])))",
                         "legendFormat": "{{endpoint}}",
                         "queryType": "instant",
                         "step": ""
@@ -607,7 +607,7 @@
           "vizConfig": {
             "kind": "VizConfig",
             "group": "bargauge",
-            "version": "13.3.0-37900028434",
+            "version": "13.3.0-39387670315",
             "spec": {
               "options": {
                 "displayMode": "basic",
@@ -778,10 +778,10 @@
           "name": "env",
           "current": {
             "text": [
-              "local"
+              "All"
             ],
             "value": [
-              "local"
+              "$__all"
             ]
           },
           "label": "env",
@@ -818,8 +818,10 @@
           "name": "level",
           "query": "DEBUG,INFO,WARNING,ERROR,CRITICAL",
           "current": {
-            "text": "DEBUG",
-            "value": "DEBUG"
+            "text": "All",
+            "value": [
+              "$__all"
+            ]
           },
           "options": [],
           "multi": true,

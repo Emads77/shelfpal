@@ -17,6 +17,9 @@ export default defineConfig({
 
   use: {
     baseURL: process.env.E2E_BASE_URL || "http://localhost:8080",
+    // The PWA service worker would answer API requests itself and bypass
+    // page.route, so the stubbed lookups would hit the real OpenLibrary.
+    serviceWorkers: "block",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },
