@@ -77,7 +77,9 @@ test.describe("US-02: add a book by ISBN", () => {
       route.fulfill({
         status: 503,
         contentType: "application/json",
-        body: JSON.stringify({ detail: "Book lookup is unavailable right now." }),
+        body: JSON.stringify({
+          detail: "Book lookup is unavailable right now.",
+        }),
       }),
     );
 

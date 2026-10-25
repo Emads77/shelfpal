@@ -39,7 +39,9 @@ test.describe("US-03: bookcases and shelves", () => {
 
     await page.goto("/bookcases");
     await page.getByRole("button", { name: /^Living room/ }).click();
-    await expect(page.getByText("This bookcase has no shelves yet.")).toBeVisible();
+    await expect(
+      page.getByText("This bookcase has no shelves yet."),
+    ).toBeVisible();
 
     // Add two shelves
     await page
