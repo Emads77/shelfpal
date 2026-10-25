@@ -126,7 +126,7 @@ deploy-production:
 
 e2e-acceptance:
   stage: e2e
-  image: mcr.microsoft.com/playwright:v1.XX.X-noble
+  image: mcr.microsoft.com/playwright:v1.64.1-noble
   needs: [deploy-acceptance]
   variables:
     E2E_BASE_URL: https://acc.shelfpal.saxion.college
