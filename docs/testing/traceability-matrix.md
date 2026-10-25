@@ -66,11 +66,24 @@ Left out for now: US-08 Picker for read suggestions, US-11 Adding books while of
 
 The backend already has passing tests in CI, but only these are mapped to stories so far. Map the remaining existing tests to their stories as extra API rows.
 
-| ID     | Story | What it checks                                                                                                                       | File                | Owner | Status |
-| ------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------- | ----- | ------ |
-| API-01 | US-05 | Copy on write: an API book is cloned on the first book field edit, no clone when values are unchanged, other users keep the original | test_copy_update.py |       | Done   |
-| API-02 | US-09 | An anonymous PATCH on a copy's status is rejected                                                                                    | Not written yet     |       | To do  |
-| API-03 | US-09 | A status outside unread, reading and finished is rejected with a 400, and the copy keeps its current status                          | test_copy_status.py |       | To do  |
+| ID     | Story | What it checks                                                                                                                                    | File                                         | Owner | Status |
+|--------|-------|---------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|-------|--------|
+| API-01 | US-05 | Copy on write: an API book is cloned on the first book field edit, no clone when values are unchanged, other users keep the original              | test_copy_update.py                          |       | Done   |
+| API-02 | US-09 | An anonymous PATCH on a copy's status is rejected                                                                                                 | test_copy_status.py                          |       | Done   |
+| API-03 | US-09 | A status outside unread, reading and finished is rejected with a 400, and the copy keeps its current status                                       | test_copy_status.py                          |       | Done   |
+| API-04 | US-01 | Registering creates an account, and duplicate email, duplicate username and weak passwords are rejected                                           | accounts/tests.py                            |       | Done   |
+| API-05 | US-01 | Logging in returns tokens, wrong password and unknown email give the same error, refresh rotates the token, logout blacklists it                  | accounts/tests.py                            |       | Done   |
+| API-06 | US-02 | Looking up an ISBN returns the book, an unknown ISBN gives 404, OpenLibrary being down gives 503, a malformed ISBN gives 400 (OpenLibrary mocked) | test_book_lookup.py, test_external_lookup.py |       | Done   |
+| API-07 | US-02 | Adding a looked-up book creates a copy on the chosen shelf or unassigned, and another user's shelf or private book gives 404                      | test_add_scanned_book.py                     |       | Done   |
+| API-08 | US-03 | Edition details (signed, numbered, size) are saved, and a number above the size, zero, or a size without a number is rejected                     | test_copy_details.py                         |       | Done   |
+| API-09 | US-03 | Bookcases can be created and renamed, duplicate names are rejected per user, and other users' bookcases are not reachable                         | test_bookcases.py                            |       | Done   |
+| API-10 | US-03 | Shelves can be created singly or in bulk, bad batches are rejected whole, and deleting a shelf or bookcase unshelves its copies                   | test_shelves.py                              |       | Done   |
+| API-11 | US-04 | A book added by hand needs a title, saves optional fields empty, cleans the ISBN, and a foreign shelf is rejected with nothing saved              | test_add_book.py                             |       | Done   |
+| API-12 | US-05 | Copies can be moved to a shelf or to unassigned, and another user's copies or shelves are refused                                                 | test_copies.py                               |       | Done   |
+| API-13 | US-05 | The copy detail returns book, edition and location, and another user's copy gives 404                                                             | test_copy_detail_view.py                     |       | Done   |
+| API-14 | US-06 | Deleting copies keeps the books, and another user's copies are never deleted                                                                      | test_copies.py                               |       | Done   |
+| API-15 | US-07 | The copy list returns only my copies, filtered by shelf or unassigned, with the shelf location of each                                            | test_copies.py                               |       | Done   |
+| API-16 | US-07 | The library overview counts copies per shelf and bookcase, caps the previews, and includes only my data                                           | test_overview.py                             |       | Done   |
 
 
 ## End to end tests (Playwright)
