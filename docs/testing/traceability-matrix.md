@@ -72,26 +72,33 @@ The backend already has passing tests in CI, but only these are mapped to storie
 | API-02 | US-09 | An anonymous PATCH on a copy's status is rejected                                                                                    | Not written yet     |       | To do  |
 | API-03 | US-09 | A status outside unread, reading and finished is rejected with a 400, and the copy keeps its current status                          | test_copy_status.py |       | To do  |
 
+
 ## End to end tests (Playwright)
 
-0 of 12 done. All are blocked until Playwright runs in CI against a fresh stack with migrations and seed data. Each test creates its own user, so a run leaves no residue for the next one.
+10 of 15 done. The tests live in `frontend/e2e` and run in the `e2e-acceptance` job after every deploy to acceptance. Run them locally against the Docker stack with `npx playwright test`.
 
-| ID     | Story        | What it checks                                                                                     | File                  | Owner | Status  |
-| ------ | ------------ | -------------------------------------------------------------------------------------------------- | --------------------- | ----- | ------- |
-| E2E-01 | US-01        | Log in and log out                                                                                 | e2e/auth.spec.js      |       | Blocked |
-| E2E-02 | US-01        | A wrong password shows an error and stays on the login page                                        | e2e/auth.spec.js      |       | Blocked |
-| E2E-03 | US-01        | Anonymous API requests to copies are rejected (API test)                                           | e2e/auth.spec.js      |       | Blocked |
-| E2E-04 | US-03        | Create a bookcase with shelves, rename it, delete it                                               | e2e/bookcases.spec.js |       | Blocked |
-| E2E-05 | US-04, US-03 | Add a book manually with shelf, signed and numbered, and find it on that shelf                     | e2e/books.spec.js     |       | Blocked |
-| E2E-06 | US-02        | Add a book by ISBN, with the external API stubbed                                                  | e2e/books.spec.js     |       | Blocked |
-| E2E-07 | US-02        | Add a book while the external API is down: a message is shown, and the link to manual entry works. | e2e/books.spec.js     |       | Blocked |
-| E2E-08 | US-05        | Edit a book and move it to another shelf                                                           | e2e/books.spec.js     |       | Blocked |
-| E2E-09 | US-05        | Copy on write: user A edits a catalogue book, user B still sees the original                       | e2e/books.spec.js     |       | Blocked |
-| E2E-10 | US-09        | Change the read status, and it is still set after a reload                                         | e2e/books.spec.js     |       | Blocked |
-| E2E-11 | US-06        | Delete a book, and it is gone after a reload                                                       | e2e/books.spec.js     |       | Blocked |
-| E2E-12 | US-07        | Search the collection by title and see which shelf the book is on                                  | e2e/books.spec.js     |       | Blocked |
+Each test registers its own user with a unique email, so tests never share data. A run produces the same result every time and leaves nothing that affects the next run. Test users do stay on acceptance; they never collide because every email is unique.
 
-File names are suggestions until the Playwright setup is merged.
+Data a test is not about (bookcases, shelves, books) is created through the API. Only the action under test goes through the UI, and the result is checked both on screen and in the database through the API.
+
+| ID     | Story        | What it checks                                                                        | File                  | Status |
+| ------ | ------------ | ------------------------------------------------------------------------------------- | --------------------- | ------ |
+| E2E-01 | US-01        | Log in and log out; after logout a protected page sends you to the login page        | e2e/auth.spec.js      | Done   |
+| E2E-02 | US-01        | A wrong password shows an error and stays on the login page                           | e2e/auth.spec.js      | Done   |
+| E2E-03 | US-01        | Anonymous API requests to copies are rejected, and an unknown user cannot log in     | e2e/auth.spec.js      | Done   |
+| E2E-04 | US-03        | Create a bookcase, and it is still there after a reload                               | e2e/bookcases.spec.js | Done   |
+| E2E-05 | US-04        | Add a book manually, and it is saved and shown in the collection                      | e2e/books.spec.js     | Done   |
+| E2E-06 | US-02        | Add a book by ISBN                                                                    | e2e/books.spec.js     | To do  |
+| E2E-07 | US-02        | Add a book while the external API is down: a message is shown, and manual entry works | e2e/books.spec.js     | To do  |
+| E2E-08 | US-05        | Edit the title of a book, and the change survives a reload                            | e2e/books.spec.js     | Done   |
+| E2E-09 | US-05        | Copy on write: user A edits a catalogue book, user B still sees the original          | e2e/books.spec.js     | To do  |
+| E2E-10 | US-09        | Change the reading status, and it is still set after a reload                         | e2e/books.spec.js     | Done   |
+| E2E-11 | US-06        | Delete a book, and it is gone after a reload                                          | e2e/books.spec.js     | Done   |
+| E2E-12 | US-07        | Search by title, ignoring case and spaces, and see which shelf the book is on         | e2e/books.spec.js     | Done   |
+| E2E-13 | US-03        | Add shelves to a bookcase, rename it, delete it                                       | e2e/bookcases.spec.js | To do  |
+| E2E-14 | US-04, US-03 | Add a book manually with shelf, signed and numbered, and find it on that shelf        | e2e/books.spec.js     | To do  |
+| E2E-15 | US-05, US-03 | Move a book to another shelf                                                          | e2e/books.spec.js     | To do  |
+
 
 ## Manual tests (acceptance)
 

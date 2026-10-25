@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { loginViaUI, registerUser, uniqueUser } from "./helpers.js";
+import { loginViaUI, registerUser, uniqueUser } from "./helpers";
 
 test.describe("US-01: register and log in", () => {
   test("E2E-01 logs in and logs out", async ({ page, request }) => {
