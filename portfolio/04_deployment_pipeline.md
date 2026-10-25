@@ -16,7 +16,7 @@ A GitLab pipeline with the stages lint, test, build, deploy and e2e. A merge int
 | Deploy script with migrations and seeding | `deploy/deploy.sh`                                                                               |
 | Server compose file and settings template | `deploy/docker-compose.server.yaml`, `deploy/.env.server.example`                                |
 | Screenshot: a full pipeline on dev        | ![Full pipeline on dev: lint, test, build, deploy and e2e all green](images/04_pipeline_dev.png) |
-|  |
+
 
 ## What the assessor looks at
 
