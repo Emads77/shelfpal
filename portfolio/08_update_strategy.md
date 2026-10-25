@@ -10,15 +10,18 @@ Each environment runs two backends and two frontends. A deploy first runs the mi
 
 ## Proof
 
-| What                                  | Where to see it                                                                                                                                                                                                                                                                                         |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------------------- | --------- |
-| Deploy order                          | `deploy/deploy.sh`                                                                                                                                                                                                                                                                                      |
-| Two backends with health checks       | `deploy/docker-compose.server.yaml`, `backend/healthcheck.py`                                                                                                                                                                                                                                           |
-| Backend balancing and retry           | `frontend/nginx.conf`                                                                                                                                                                                                                                                                                   |
-| Frontend balancing with health checks | `deploy/Caddyfile`                                                                                                                                                                                                                                                                                      |
-| Version banner                        | `frontend/src/shared/ui/UpdateBanner.jsx`, `version.json` (never cached, see `frontend/nginx.conf`)                                                                                                                                                                                                     |
-| Design and diagrams                   | Technical design 13.11                                                                                                                                                                                                                                                                                  |
-| Zero failure test during a deploy     | During a deploy to acceptance, a script sent a request to the frontend and to `/api/health/` every 0.2 seconds for 5 minutes. Result: 843 requests OK, 3 failed with 502, all on the backend, within 3 seconds. The frontend never failed. ![Request loop during a deploy](images/08_zero_downtime.png) |     | Screenshot: reload banner | [TO FILL] |
+| What | Where to see it |
+| --- | --- |
+| Deploy order | `deploy/deploy.sh` |
+| Two backends with health checks | `deploy/docker-compose.server.yaml`, `backend/healthcheck.py` |
+| Backend balancing and retry | `frontend/nginx.conf` |
+| Frontend balancing with health checks | `deploy/Caddyfile` |
+| Version banner | `frontend/src/shared/ui/UpdateBanner.jsx`, `version.json` (never cached, see `frontend/nginx.conf`) |
+| Design and diagrams | Technical design 13.11 |
+| First zero failure test | During a deploy to acceptance, a script sent a request to the frontend and to `/api/health/` every 0.2 seconds for 5 minutes. Result: 843 requests OK, 3 failed with 502, all on the backend, within 3 seconds. The frontend never failed. The cause is under Problems. ![Request loop during a deploy](images/08_zero_downtime.png) ![Deploy log: backend-b is replaced in the same second backend-a becomes healthy](images/08_deploy_log.png) |
+| Retest after the fix | Same script during the next deploy: 387 requests OK, 0 failed. The deploy log shows the 15 second wait between `backend-a` becoming healthy and `backend-b` being replaced. ![Request loop after the fix](images/08_zero_downtime_after_fix.png) ![Deploy log after the fix](images/08_deploy_log_after_fix.png) |
+| Reload banner | A tab opened before the deploy shows the banner once the new version is live. ![Reload banner after a deploy](images/08_reload_banner.png) |
+
 
 ## What the assessor looks at
 
