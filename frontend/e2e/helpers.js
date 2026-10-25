@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { listCopies } from "./api.js";
 
 // Every test gets its own user, so tests never share data.
 // That makes runs repeatable in any order, and no run affects the next one.
@@ -48,4 +49,25 @@ export async function accessToken(request, user) {
   });
   expect(response.status()).toBe(200);
   return (await response.json()).access;
+}
+
+// The seed command creates shared catalogue books, and a user (collector) who
+// owns copies of them. Reading the book from that collection avoids the lookup
+// endpoint, which would call the real OpenLibrary for a book that is missing.
+export async function catalogueBook(request, title = "Pride and Prejudice") {
+  const password = process.env.SEED_USER_PASSWORD;
+  if (!password) {
+    throw new Error(
+      "Set SEED_USER_PASSWORD to the password used for `manage.py seed`.",
+    );
+  }
+  const token = await accessToken(request, {
+    email: "collector@shelfpal.test",
+    password,
+  });
+  const copy = (await listCopies(request, token)).find(
+    (c) => c.book.title === title,
+  );
+  expect(copy, `The seed has no copy of "${title}"`).toBeTruthy();
+  return copy.book;
 }
