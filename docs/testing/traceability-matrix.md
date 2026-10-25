@@ -83,9 +83,9 @@ Data a test is not about (bookcases, shelves, books) is created through the API.
 
 | ID     | Story        | What it checks                                                                        | File                  | Status |
 | ------ | ------------ | ------------------------------------------------------------------------------------- | --------------------- | ------ |
-| E2E-01 | US-01        | Log in and log out; after logout a protected page sends you to the login page        | e2e/auth.spec.js      | Done   |
+| E2E-01 | US-01        | Log in and log out; after logout a protected page sends you to the login page         | e2e/auth.spec.js      | Done   |
 | E2E-02 | US-01        | A wrong password shows an error and stays on the login page                           | e2e/auth.spec.js      | Done   |
-| E2E-03 | US-01        | Anonymous API requests to copies are rejected, and an unknown user cannot log in     | e2e/auth.spec.js      | Done   |
+| E2E-03 | US-01        | Anonymous API requests to copies are rejected, and an unknown user cannot log in      | e2e/auth.spec.js      | Done   |
 | E2E-04 | US-03        | Create a bookcase, and it is still there after a reload                               | e2e/bookcases.spec.js | Done   |
 | E2E-05 | US-04        | Add a book manually, and it is saved and shown in the collection                      | e2e/books.spec.js     | Done   |
 | E2E-06 | US-02        | Add a book by ISBN                                                                    | e2e/books.spec.js     | To do  |
@@ -102,19 +102,20 @@ Data a test is not about (bookcases, shelves, books) is created through the API.
 
 ## Manual tests (acceptance)
 
-0 of 9 done. These cover what automation can't: the real camera, real devices and keyboard only use. Each one gets its own test case with preconditions, steps and expected result, plus a dated entry in the test report.
+10 of 10 done. These cover what automation can't: the real camera, real devices and keyboard only use. Each one gets its own test case with preconditions, steps and expected result, plus a dated entry in the test report.
 
 | ID    | Story        | What it checks                                                                                        | Device            | Owner | Status |
 | ----- | ------------ | ----------------------------------------------------------------------------------------------------- | ----------------- | ----- | ------ |
-| MT-01 | US-02        | Scan a real barcode with the camera, and the found book is shown and can be added                     | Phone             |       | To do  |
-| MT-02 | US-01        | Log in with the same account on two devices and see the same collection                               | Phone and desktop |       | To do  |
-| MT-03 | US-03, US-05 | Move a book to another shelf on the phone, then find it there on desktop                              | Phone and desktop |       | To do  |
-| MT-04 | US-04        | Add a book manually using only the keyboard                                                           | Desktop           |       | To do  |
-| MT-05 | US-09, US-06 | Change the status and delete a book on a small screen; menus fit and are easy to tap                  | Phone             |       | To do  |
-| MT-06 | US-10        | Load the library, go offline (Application, Service workers, Offline), reload: library and banner show | Desktop           |       |        |
-| MT-07 | US-10        | The installed app opens in airplane mode and shows the library                                        | Phone             |       |        |
-| MT-08 | US-10        | Adding a book offline shows "Can't reach the server" and keeps the form input                         | Desktop           |       |        |
-| MT-09 | US-10        | After logout, Cache Storage holds no API responses                                                    | Desktop           |       |        |
+| MT-01 | US-02        | Scan a real barcode with the camera, and the found book is shown and can be added                     | Phone             |       | Done   |
+| MT-02 | US-01        | Log in with the same account on two devices and see the same collection                               | Phone and desktop |       | Done   |
+| MT-03 | US-03, US-05 | Move a book to another shelf on the phone, then find it there on desktop                              | Phone and desktop |       | Done   |
+| MT-04 | US-04        | Add a book manually using only the keyboard                                                           | Desktop           |       | Done   |
+| MT-05 | US-09, US-06 | Change the status and delete a book on a small screen; menus fit and are easy to tap                  | Phone             |       | Done   |
+| MT-06 | US-10        | Load the library, go offline (Application, Service workers, Offline), reload: library and banner show | Desktop           |       | Done   |
+| MT-07 | US-10        | The installed app opens in airplane mode and shows the library                                        | Phone             |       | Done   |
+| MT-08 | US-10        | Adding a book offline shows "Can't reach the server" and keeps the form input                         | Desktop           |       | Done   |
+| MT-09 | US-10        | After logout, Cache Storage holds no API responses                                                    | Desktop           |       | Done   |
+| MT-10 | US-07        | Search the collection on a phone                                                                      | Phone             |       | Done   |
 
 MT-04 also serves as accessibility evidence for the FSD functionality row.
 
@@ -130,6 +131,6 @@ Every story in scope has planned component, end to end and manual tests. The API
 | US-04 | CT-01, CT-02, CT-15, CT-16        |                | E2E-05                 | MT-04          |
 | US-05 | CT-01, CT-02, CT-03, CT-19, CT-20 | API-01         | E2E-08, E2E-09         | MT-03          |
 | US-06 | CT-21                             |                | E2E-11                 | MT-05          |
-| US-07 | CT-24, CT-25, CT-26               |                | E2E-12                 |                |
+| US-07 | CT-24, CT-25, CT-26               |                | E2E-12                 | MT-10          |
 | US-09 | CT-13, CT-14, CT-27               | API-02, API-03 | E2E-10                 | MT-05          |
 | US-10 | CT-22, CT-23                      |                |                        | MT-06 to MT-09 |
